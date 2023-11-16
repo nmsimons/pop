@@ -27,9 +27,12 @@ export function ReactApp(props: {
         setVictory(countMaxLevelCircles(appRoot) == 4 ** _MaxLevel);
     }, [invalidations]);
 
+    const classes =
+        'flex flex-col gap-3 items-center justify-center content-center m-6 select-none relative w-full';
+
     if (victory) {
         return (
-            <div className="flex flex-col gap-3 items-center justify-center content-center m-6 select-none relative">
+            <div className={classes}>
                 <div className="absolute animate-bounce text-xl font-semibold">
                     win
                 </div>
@@ -39,8 +42,10 @@ export function ReactApp(props: {
         );
     } else {
         return (
-            <div className="flex flex-col gap-3 items-center justify-center content-center m-6 select-none relative">
-                <CirclesLayerView l={appRoot} />
+            <div className={classes}>
+                <div className="scale-75 md:scale-100">
+                    <CirclesLayerView l={appRoot} />
+                </div>
                 <Explanation />
             </div>
         );
@@ -102,7 +107,7 @@ export function CircleView(props: { c: Circle }): JSX.Element {
     return (
         <div
             style={color}
-            className={'border-0 rounded-full ' + size}
+            className={'border-0 rounded-full scale-95 ' + size}
             onMouseEnter={(e) => handleMouseEnter(e)}
             onClick={() => handleClick()}
         ></div>
@@ -156,10 +161,10 @@ const circleSizeMap = new Map<number, string>([
 
 export const getRandomColor = (): string => {
     const color = colorMap.get(getRandomInt(5));
-    if (typeof color === "string") {
+    if (typeof color === 'string') {
         return color;
     } else {
-        return "Black";
+        return 'Black';
     }
 };
 
