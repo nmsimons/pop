@@ -69,7 +69,7 @@ module.exports = {
     plugins: [
         // No need to write a index.html
         new HtmlWebpackPlugin({
-            title: 'Simple Demo',
+            title: 'Pop Demo',
             favicon: '',
         }),
         // Load environment variables during webpack bundle
