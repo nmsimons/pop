@@ -64,6 +64,16 @@ export function CircleView(props: { l: Circle }): JSX.Element {
         }
     };
 
+    const handleClick = (e: React.MouseEvent) => {
+        popCircle();
+    }
+
+    const handleMouseEnter = (e: React.MouseEvent) => {
+        if (e.ctrlKey || e.shiftKey) {
+            popCircle();
+        }
+    }
+
     let size = 'w-64';
 
     switch (props.l.level) {
@@ -96,7 +106,7 @@ export function CircleView(props: { l: Circle }): JSX.Element {
     return (
         <div
             className={'transition-all border-0 rounded-full bg-black ' + size}
-            onMouseEnter={() => popCircle()}
+            onMouseEnter={(e) => handleMouseEnter(e)} onClick={(e) => handleClick(e)}
         ></div>
     );
 }
