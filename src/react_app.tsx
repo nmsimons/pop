@@ -28,7 +28,7 @@ export function ReactApp(props: {
     }, [invalidations]);
 
     const classes =
-        'flex flex-col gap-3 items-center justify-center content-center m-6 select-none relative w-full';
+        'flex flex-col gap-3 items-center justify-center mt-6 content-center select-none relative w-full';
 
     if (victory) {
         return (
@@ -43,7 +43,7 @@ export function ReactApp(props: {
     } else {
         return (
             <div className={classes}>
-                <div className="scale-75 md:scale-100">
+                <div className="scale-50 md:scale-75 lg:scale-100">
                     <CirclesLayerView l={appRoot} />
                 </div>
                 <Explanation />
