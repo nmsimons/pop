@@ -11,6 +11,7 @@ export function ReactApp(props: {
     container: IFluidContainer;
 }): JSX.Element {
     const [invalidations, setInvalidations] = useState(0);
+    const [victory, setVictory] = useState(false);
     const appRoot = props.data.root;
 
     // Register for tree deltas when the component mounts.
@@ -23,15 +24,27 @@ export function ReactApp(props: {
     }, [invalidations]);
 
     useEffect(() => {
-        console.log(testForVictory(appRoot));
-    }, [invalidations])
+        setVictory(countMaxLevelCircles(appRoot) == 4 ** _MaxLevel);
+    }, [invalidations]);
 
-    return (
-        <div className="flex flex-col gap-3 items-center justify-center content-center m-6">
-            <CirclesLayerView l={appRoot} />
-            <Explanation />
-        </div>
-    );
+    if (victory) {
+        return (
+            <div className="flex flex-col gap-3 items-center justify-center content-center m-6 select-none relative">
+                <div className="absolute animate-bounce text-xl font-semibold">
+                    win
+                </div>
+                <CirclesLayerView l={appRoot} />
+                <Explanation />
+            </div>
+        );
+    } else {
+        return (
+            <div className="flex flex-col gap-3 items-center justify-center content-center m-6 select-none relative">
+                <CirclesLayerView l={appRoot} />
+                <Explanation />
+            </div>
+        );
+    }
 }
 
 export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
@@ -74,35 +87,15 @@ export function CircleView(props: { l: Circle }): JSX.Element {
     };
 
     const handleMouseEnter = (e: React.MouseEvent) => {
-        if (e.ctrlKey || e.shiftKey) {
+        if (e.buttons > 0) {
             popCircle();
         }
     };
 
-    let size = 'w-64';
-
-    switch (props.l.level) {
-        case 1: {
-            size = 'w-64 h-64';
-            break;
-        }
-        case 2: {
-            size = 'w-32 h-32';
-            break;
-        }
-        case 3: {
-            size = 'w-16 h-16';
-            break;
-        }
-        case 4: {
-            size = 'w-8 h-8';
-            break;
-        }
-        default: {
-            size = 'w-4 h-4 invisible';
-            break;
-        }
-    }
+    const size =
+        props.l.level === _MaxLevel
+            ? circleSizeMap.get(props.l.level) + ' invisible'
+            : circleSizeMap.get(props.l.level);
 
     return (
         <div
@@ -133,26 +126,27 @@ export const createFourCircles = (level: number) => {
     });
 };
 
-export const testForVictory = (fc: FourCircles): boolean => {
-    if (
-        !testBranchForVictory(fc.circle1, 'circle1') ||
-        !testBranchForVictory(fc.circle2, 'circle2') ||
-        !testBranchForVictory(fc.circle3, 'circle3') ||
-        !testBranchForVictory(fc.circle4, 'circle4')
-    )
-        return false;
-    return true;
+export const countMaxLevelCircles = (item: FourCircles | Circle): number => {
+    if (Tree.is(item, circle)) {
+        if (item.level === _MaxLevel) return 1;
+    }
+
+    if (Tree.is(item, fourCircles)) {
+        return (
+            countMaxLevelCircles(item.circle1) +
+            countMaxLevelCircles(item.circle2) +
+            countMaxLevelCircles(item.circle3) +
+            countMaxLevelCircles(item.circle4)
+        );
+    }
+    return 0;
 };
 
-export const testBranchForVictory = (
-    item: FourCircles | Circle,
-    key: keyof FourCircles
-): boolean => {
-    if (Tree.is(item, circle)) {
-        console.log(item.level);        
-        if (item.level != _MaxLevel) return false;
-        return true;
-    } else {
-        return testBranchForVictory(item[key], key);
-    }
-};
+const circleSizeMap = new Map<number, string>([
+    [1, 'w-64 h-64'],
+    [2, 'w-32 h-32'],
+    [3, 'w-16 h-16'],
+    [4, 'w-8 h-8'],
+    [5, 'w-4 h-4'],
+    [6, 'w-2 h-2'],
+]);
