@@ -107,7 +107,7 @@ export function CircleView(props: { c: Circle }): JSX.Element {
     return (
         <div
             style={color}
-            className={'border-0 rounded-full scale-95 ' + size}
+            className={'border-0 rounded-full scale-95 shadow-md ' + size}
             onMouseEnter={(e) => handleMouseEnter(e)}
             onClick={() => handleClick()}
         ></div>
