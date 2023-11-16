@@ -64,7 +64,7 @@ export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
 
 export function CirclesLayerView(props: { l: Circle | FourCircles }): JSX.Element {
     if (Tree.is(props.l, circle)) {
-        return <CircleView l={props.l} />;
+        return <CircleView c={props.l} />;
     } else if (Tree.is(props.l, fourCircles)) {
         return <FourCirclesView fc={props.l} />;
     } else {
@@ -72,12 +72,12 @@ export function CirclesLayerView(props: { l: Circle | FourCircles }): JSX.Elemen
     }
 }
 
-export function CircleView(props: { l: Circle }): JSX.Element {
+export function CircleView(props: { c: Circle }): JSX.Element {
     const popCircle = () => {
-        const parent = Tree.parent(props.l);
-        if (Tree.is(parent, fourCircles) && props.l.level < _MaxLevel) {
-            const fc = createFourCircles(props.l.level + 1);
-            const key = Tree.key(props.l) as keyof typeof parent;
+        const parent = Tree.parent(props.c);
+        if (Tree.is(parent, fourCircles) && props.c.level < _MaxLevel) {
+            const fc = createFourCircles(props.c.level + 1);
+            const key = Tree.key(props.c) as keyof typeof parent;
             parent[key] = fc;
         }
     };
@@ -93,13 +93,16 @@ export function CircleView(props: { l: Circle }): JSX.Element {
     };
 
     const size =
-        props.l.level === _MaxLevel
-            ? circleSizeMap.get(props.l.level) + ' invisible'
-            : circleSizeMap.get(props.l.level);
+        props.c.level === _MaxLevel
+            ? circleSizeMap.get(props.c.level) + ' invisible'
+            : circleSizeMap.get(props.c.level);
+
+    const color = { background: props.c.color };
 
     return (
         <div
-            className={'border-0 rounded-full bg-black ' + size}
+            style={color}
+            className={'border-0 rounded-full ' + size}
             onMouseEnter={(e) => handleMouseEnter(e)}
             onClick={() => handleClick()}
         ></div>
@@ -119,10 +122,10 @@ export function Explanation(): JSX.Element {
 
 export const createFourCircles = (level: number) => {
     return fourCircles.create({
-        circle1: circle.create({ level: level }),
-        circle2: circle.create({ level: level }),
-        circle3: circle.create({ level: level }),
-        circle4: circle.create({ level: level }),
+        circle1: circle.create({ level: level, color: getRandomColor() }),
+        circle2: circle.create({ level: level, color: getRandomColor() }),
+        circle3: circle.create({ level: level, color: getRandomColor() }),
+        circle4: circle.create({ level: level, color: getRandomColor() }),
     });
 };
 
@@ -149,4 +152,25 @@ const circleSizeMap = new Map<number, string>([
     [4, 'w-8 h-8'],
     [5, 'w-4 h-4'],
     [6, 'w-2 h-2'],
+]);
+
+export const getRandomColor = (): string => {
+    const color = colorMap.get(getRandomInt(5));
+    if (typeof color === "string") {
+        return color;
+    } else {
+        return "Black";
+    }
+};
+
+const getRandomInt = (max: number): number => {
+    return Math.floor(Math.random() * max);
+};
+
+const colorMap = new Map<number, string>([
+    [0, 'Red'],
+    [1, 'Green'],
+    [2, 'Blue'],
+    [3, 'Orange'],
+    [4, 'Purple'],
 ]);
