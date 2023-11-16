@@ -100,14 +100,14 @@ export function CircleView(props: { c: Circle }): JSX.Element {
     const size =
         props.c.level === _MaxLevel
             ? circleSizeMap.get(props.c.level) + ' invisible'
-            : circleSizeMap.get(props.c.level);
+            : circleSizeMap.get(props.c.level); 
 
     const color = { background: props.c.color };
 
     return (
         <div
             style={color}
-            className={'border-0 rounded-full scale-95 shadow-md ' + size}
+            className={'transition-all duration-500 ease-in-out border-0 rounded-full scale-95 hover:scale-100 shadow-md ' + size}
             onMouseEnter={(e) => handleMouseEnter(e)}
             onClick={() => handleClick()}
         ></div>
