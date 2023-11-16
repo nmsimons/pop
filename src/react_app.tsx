@@ -31,12 +31,16 @@ export function ReactApp(props: {
 
 export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
     return (
-        <>
-            <CirclesLayerView l={props.fc.circle1} />
-            <CirclesLayerView l={props.fc.circle2} />
-            <CirclesLayerView l={props.fc.circle3} />
-            <CirclesLayerView l={props.fc.circle4} />
-        </>
+        <div className="flex flex-col">
+            <div className="flex flex-row">
+                <CirclesLayerView l={props.fc.circle1} />
+                <CirclesLayerView l={props.fc.circle2} />
+            </div>
+            <div className="flex flex-row">
+                <CirclesLayerView l={props.fc.circle3} />
+                <CirclesLayerView l={props.fc.circle4} />
+            </div>
+        </div>
     );
 }
 
@@ -51,14 +55,50 @@ export function CirclesLayerView(props: { l: Circle | FourCircles }): JSX.Elemen
 }
 
 export function CircleView(props: { l: Circle }): JSX.Element {
-    const handleClick = () => {
-        const parent = Tree.parent(props.l) as FourCircles;
-        const fc = createFourCircles(props.l.level + 1);
-        const key = Tree.key(props.l) as string;
-        parent[key] = fc;
+    const popCircle = () => {
+        const parent = Tree.parent(props.l);
+        if (Tree.is(parent, fourCircles) && props.l.level < 5) {
+            const fc = createFourCircles(props.l.level + 1);
+            const key = Tree.key(props.l) as keyof typeof parent;
+            parent[key] = fc;
+        }
     };
 
-    return <div onClick={() => handleClick()}>{props.l.level}</div>;
+    let size = 'w-64';
+
+    switch (props.l.level) {
+        case 1: {
+            size = 'w-64 h-64';
+            break;
+        }
+        case 2: {
+            size = 'w-32 h-32';
+            break;
+        }
+        case 3: {
+            size = 'w-16 h-16';
+            break;
+        }
+        case 4: {
+            size = 'w-8 h-8';
+            break;
+        }
+        // case 5: {
+        //     size = 'w-4 h-4';
+        //     break;
+        // }        
+        default: {
+            size = 'w-4 h-4 invisible';
+            break;
+        }        
+    }
+
+    return (
+        <div
+            className={'transition-all border-0 rounded-full bg-black ' + size}
+            onMouseEnter={() => popCircle()}
+        ></div>
+    );
 }
 
 export function Explanation(): JSX.Element {
