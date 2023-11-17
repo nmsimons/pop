@@ -10,8 +10,7 @@ export function ReactApp(props: {
     data: TreeView<FourCircles>;
     container: IFluidContainer;
 }): JSX.Element {
-    const [invalidations, setInvalidations] = useState(0);
-    const [victory, setVictory] = useState(false);
+    const [invalidations, setInvalidations] = useState(0);    
     const appRoot = props.data.root;
 
     // Register for tree deltas when the component mounts.
@@ -23,33 +22,17 @@ export function ReactApp(props: {
         });
     }, [invalidations]);
 
-    useEffect(() => {
-        setVictory(testForEmpty(appRoot));
-    }, [invalidations]);
-
     const classes =
         'flex flex-col gap-3 items-center justify-center mt-6 content-center select-none relative w-full';
 
-    if (victory) {
-        return (
-            <div className={classes}>
-                <div className="absolute animate-bounce text-xl font-semibold">
-                    win
-                </div>
+    return (
+        <div className={classes}>
+            <div className="scale-50 md:scale-75 lg:scale-100">
                 <CirclesLayerView l={appRoot} level={1} />
-                <Explanation />
             </div>
-        );
-    } else {
-        return (
-            <div className={classes}>
-                <div className="scale-50 md:scale-75 lg:scale-100">
-                    <CirclesLayerView l={appRoot} level={1} />
-                </div>
-                <Explanation />
-            </div>
-        );
-    }
+            <Explanation />
+        </div>
+    );
 }
 
 export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
@@ -133,8 +116,15 @@ export function CircleView(props: { c: Circle; level: number }): JSX.Element {
 }
 
 export function Popped(props: { level: number }): JSX.Element {
-    const size = circleSizeMap.get(props.level) + ' invisible';
-    return <div className={'border-0 rounded-full scale-95 ' + size}></div>;
+    const size = circleSizeMap.get(props.level) + ' ';
+    return (
+        <div
+            className={
+                'border-2 border-gray-300 border-dashed bg-transparent rounded-full scale-95 ' +
+                size
+            }
+        ></div>
+    );
 }
 
 export function Explanation(): JSX.Element {
@@ -164,7 +154,8 @@ export const testForEmpty = (fc: FourCircles) => {
         fc.circle2 == undefined &&
         fc.circle3 == undefined &&
         fc.circle4 == undefined
-    ) return true;
+    )
+        return true;
     return false;
 };
 
