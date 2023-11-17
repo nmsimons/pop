@@ -3,6 +3,7 @@ import { TreeView } from '@fluid-experimental/tree2';
 import { Circle, FourCircles, circle, fourCircles } from './schema';
 import { IFluidContainer } from 'fluid-framework';
 import { Tree } from '@fluid-experimental/tree2';
+import { countColors, colorMap, trimTree, createFourCircles, circleSizeMap, testForEmpty, againAgain } from './utils'
 
 const _MaxLevel = 5;
 
@@ -37,7 +38,7 @@ export function ReactApp(props: {
             <Explanation />
             <ColorCount colorCount={counter} />
             <AgainAgain fc={appRoot} />
-            <div className='h-16' />
+            <div className="h-16" />
         </div>
     );
 }
@@ -74,7 +75,7 @@ export function CircleWithCount(props: {
     );
 }
 
-export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {    
+export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
     return (
         <div className="flex flex-col">
             <div className="flex flex-row">
@@ -95,15 +96,7 @@ export function CirclesLayerView(props: {
 }): JSX.Element {
     if (Tree.is(props.l, circle)) {
         return <CircleView c={props.l} level={props.level} />;
-    } else if (Tree.is(props.l, fourCircles)) {
-        if (testForEmpty(props.l)) {
-            const parent = Tree.parent(props.l);
-            if (Tree.is(parent, fourCircles)) {
-                const key = Tree.key(props.l) as keyof typeof parent;
-                if (key != 'level') parent[key] = undefined;
-                return <Popped level={parent.level} />;
-            } 
-        }
+    } else if (Tree.is(props.l, fourCircles)) {        
         return <FourCirclesView fc={props.l} />;
     } else {
         return <Popped level={props.level} />;
@@ -116,6 +109,7 @@ export function CircleView(props: { c: Circle; level: number }): JSX.Element {
         if (Tree.is(parent, fourCircles) && props.level == _MaxLevel - 1) {
             const key = Tree.key(props.c) as keyof typeof parent;
             if (key != 'level') parent[key] = undefined;
+            trimTree(parent);            
         } else if (Tree.is(parent, fourCircles) && props.level < _MaxLevel) {
             const fc = createFourCircles(props.level + 1);
             const key = Tree.key(props.c) as keyof typeof parent;
@@ -190,80 +184,4 @@ export function AgainAgain(props: { fc: FourCircles }): JSX.Element {
     return <></>;
 }
 
-export const countColors = (
-    item: FourCircles | Circle | undefined,
-    counter: Map<string, number>
-): Map<string, number> => {
-    if (Tree.is(item, circle)) {
-        counter.set(item.color, (counter.get(item.color) ?? 0) + 1);
-        return counter;
-    } else if (Tree.is(item, fourCircles)) {
-        countColors(item.circle1, counter);
-        countColors(item.circle2, counter);
-        countColors(item.circle3, counter);
-        countColors(item.circle4, counter);
-        return counter;
-    } else {
-        return counter;
-    }
-};
 
-export const createFourCircles = (level: number) => {
-    return fourCircles.create({
-        circle1: circle.create({ color: getRandomColor() }),
-        circle2: circle.create({ color: getRandomColor() }),
-        circle3: circle.create({ color: getRandomColor() }),
-        circle4: circle.create({ color: getRandomColor() }),
-        level: level,
-    });
-};
-
-export const againAgain = (fc: FourCircles) => {
-    if (testForEmpty(fc)) {
-        fc.circle1 = circle.create({ color: getRandomColor() });
-        fc.circle2 = circle.create({ color: getRandomColor() });
-        fc.circle3 = circle.create({ color: getRandomColor() });
-        fc.circle4 = circle.create({ color: getRandomColor() });
-    }
-};
-
-export const testForEmpty = (fc: FourCircles) => {
-    if (
-        fc.circle1 == undefined &&
-        fc.circle2 == undefined &&
-        fc.circle3 == undefined &&
-        fc.circle4 == undefined
-    )
-        return true;
-    return false;
-};
-
-const circleSizeMap = new Map<number, string>([
-    [1, 'w-64 h-64'],
-    [2, 'w-32 h-32'],
-    [3, 'w-16 h-16'],
-    [4, 'w-8 h-8'],
-    [5, 'w-4 h-4'],
-    [6, 'w-2 h-2'],
-]);
-
-export const getRandomColor = (): string => {
-    const color = colorMap.get(getRandomInt(5));
-    if (typeof color === 'string') {
-        return color;
-    } else {
-        return 'Black';
-    }
-};
-
-const getRandomInt = (max: number): number => {
-    return Math.floor(Math.random() * max);
-};
-
-const colorMap = new Map<number, string>([
-    [0, 'Red'],
-    [1, 'Green'],
-    [2, 'Blue'],
-    [3, 'Orange'],
-    [4, 'Purple'],
-]);

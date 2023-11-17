@@ -7,7 +7,7 @@ import {
     FieldKinds,
     typeNameSymbol,
 } from '@fluid-experimental/tree2';
-import { getRandomColor } from './react_app';
+import { getRandomColor } from './utils';
 
 const sb = new SchemaBuilder({ scope: '6404be1d-5e53-43f3-ac45-113c96a7c31b' });
 
