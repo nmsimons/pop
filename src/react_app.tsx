@@ -10,7 +10,7 @@ export function ReactApp(props: {
     data: TreeView<FourCircles>;
     container: IFluidContainer;
 }): JSX.Element {
-    const [invalidations, setInvalidations] = useState(0);    
+    const [invalidations, setInvalidations] = useState(0);
     const appRoot = props.data.root;
 
     // Register for tree deltas when the component mounts.
@@ -25,14 +25,26 @@ export function ReactApp(props: {
     const classes =
         'flex flex-col gap-3 items-center justify-center mt-6 content-center select-none relative w-full';
 
-    return (
-        <div className={classes}>
-            <div className="scale-50 md:scale-75 lg:scale-100">
-                <CirclesLayerView l={appRoot} level={1} />
+    if (testForEmpty(appRoot)) {
+        return (
+            <div className={classes}>
+                <div className="scale-50 md:scale-75 lg:scale-100">
+                    <CirclesLayerView l={appRoot} level={1} />
+                </div>
+                <Explanation />
+                <AgainAgain fc={appRoot}/>
             </div>
-            <Explanation />
-        </div>
-    );
+        );
+    } else {
+        return (
+            <div className={classes}>
+                <div className="scale-50 md:scale-75 lg:scale-100">
+                    <CirclesLayerView l={appRoot} level={1} />
+                </div>
+                <Explanation />
+            </div>
+        );
+    }
 }
 
 export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
@@ -138,6 +150,12 @@ export function Explanation(): JSX.Element {
     );
 }
 
+export function AgainAgain(props: { fc: FourCircles }): JSX.Element {
+    return (
+        <div className='transition-all text-lg hover:scale-125' onClick={() => againAgain(props.fc)}>again again</div>
+    )
+}
+
 export const createFourCircles = (level: number) => {
     return fourCircles.create({
         circle1: circle.create({ color: getRandomColor() }),
@@ -146,6 +164,15 @@ export const createFourCircles = (level: number) => {
         circle4: circle.create({ color: getRandomColor() }),
         level: level,
     });
+};
+
+export const againAgain = (fc: FourCircles) => {
+    if (testForEmpty(fc)) {
+        fc.circle1 = circle.create({ color: getRandomColor() });
+        fc.circle2 = circle.create({ color: getRandomColor() });
+        fc.circle3 = circle.create({ color: getRandomColor() });
+        fc.circle4 = circle.create({ color: getRandomColor() });
+    }
 };
 
 export const testForEmpty = (fc: FourCircles) => {
