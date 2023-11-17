@@ -1,6 +1,6 @@
 import {
     AllowedUpdateType,
-    ProxyNode,
+    TypedNode,
     SchemaBuilder,
     TreeFieldSchema,
     buildTreeConfiguration,
@@ -17,26 +17,26 @@ export const circle = sb.object('circle', {
 });
 
 export const fourCircles = sb.objectRecursive('fourCircles', {
-    circle1: TreeFieldSchema.createUnsafe(FieldKinds.required, [
+    circle1: TreeFieldSchema.createUnsafe(FieldKinds.optional, [
         circle,
-        () => fourCircles,
+        () => fourCircles,        
     ]),
-    circle2: TreeFieldSchema.createUnsafe(FieldKinds.required, [
+    circle2: TreeFieldSchema.createUnsafe(FieldKinds.optional, [
         circle,
-        () => fourCircles,
+        () => fourCircles,        
     ]),
-    circle3: TreeFieldSchema.createUnsafe(FieldKinds.required, [
+    circle3: TreeFieldSchema.createUnsafe(FieldKinds.optional, [
         circle,
-        () => fourCircles,
+        () => fourCircles,        
     ]),
-    circle4: TreeFieldSchema.createUnsafe(FieldKinds.required, [
+    circle4: TreeFieldSchema.createUnsafe(FieldKinds.optional, [
         circle,
-        () => fourCircles,
+        () => fourCircles,        
     ]),
 });
 
-export type Circle = ProxyNode<typeof circle>;
-export type FourCircles = ProxyNode<typeof fourCircles>;
+export type Circle = TypedNode<typeof circle>;
+export type FourCircles = TypedNode<typeof fourCircles>;
 
 export const appSchema = sb.intoSchema(fourCircles);
 

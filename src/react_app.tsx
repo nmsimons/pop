@@ -24,7 +24,7 @@ export function ReactApp(props: {
     }, [invalidations]);
 
     useEffect(() => {
-        setVictory(countMaxLevelCircles(appRoot) == 4 ** _MaxLevel);
+        setVictory(countMaxLevelCircles(appRoot) == (4 ** (_MaxLevel - 1)));
     }, [invalidations]);
 
     const classes =
@@ -67,20 +67,25 @@ export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
     );
 }
 
-export function CirclesLayerView(props: { l: Circle | FourCircles }): JSX.Element {
+export function CirclesLayerView(props: {
+    l: Circle | FourCircles | undefined;
+}): JSX.Element {
     if (Tree.is(props.l, circle)) {
         return <CircleView c={props.l} />;
     } else if (Tree.is(props.l, fourCircles)) {
         return <FourCirclesView fc={props.l} />;
     } else {
-        return <></>;
+        return <Popped />;
     }
 }
 
 export function CircleView(props: { c: Circle }): JSX.Element {
     const popCircle = () => {
         const parent = Tree.parent(props.c);
-        if (Tree.is(parent, fourCircles) && props.c.level < _MaxLevel) {
+        if (Tree.is(parent, fourCircles) && props.c.level == _MaxLevel - 1) {
+            const key = Tree.key(props.c) as keyof typeof parent;
+            parent[key] = undefined;
+        } else if (Tree.is(parent, fourCircles) && props.c.level < _MaxLevel) {
             const fc = createFourCircles(props.c.level + 1);
             const key = Tree.key(props.c) as keyof typeof parent;
             parent[key] = fc;
@@ -100,18 +105,26 @@ export function CircleView(props: { c: Circle }): JSX.Element {
     const size =
         props.c.level === _MaxLevel
             ? circleSizeMap.get(props.c.level) + ' invisible'
-            : circleSizeMap.get(props.c.level); 
+            : circleSizeMap.get(props.c.level);
 
     const color = { background: props.c.color };
 
     return (
         <div
             style={color}
-            className={'transition-all duration-500 ease-in-out border-0 rounded-full scale-95 hover:scale-100 shadow-md ' + size}
+            className={
+                'transition-all duration-500 ease-in-out border-0 rounded-full scale-95 hover:scale-100 shadow-md ' +
+                size
+            }
             onMouseEnter={(e) => handleMouseEnter(e)}
             onClick={() => handleClick()}
         ></div>
     );
+}
+
+export function Popped(): JSX.Element {
+    const size = circleSizeMap.get(_MaxLevel - 1) + ' invisible';
+    return (<div className={'border-0 rounded-full scale-95 ' + size}></div>)
 }
 
 export function Explanation(): JSX.Element {
@@ -134,10 +147,10 @@ export const createFourCircles = (level: number) => {
     });
 };
 
-export const countMaxLevelCircles = (item: FourCircles | Circle): number => {
-    if (Tree.is(item, circle)) {
-        if (item.level === _MaxLevel) return 1;
-    }
+export const countMaxLevelCircles = (
+    item: FourCircles | Circle | undefined
+): number => {
+    if (item === undefined) return 1;
 
     if (Tree.is(item, fourCircles)) {
         return (
