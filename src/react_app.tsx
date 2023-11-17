@@ -74,16 +74,7 @@ export function CircleWithCount(props: {
     );
 }
 
-export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
-    if (testForEmpty(props.fc)) {
-        const parent = Tree.parent(props.fc);
-        if (Tree.is(parent, fourCircles)) {
-            const key = Tree.key(props.fc) as keyof typeof parent;
-            if (key != 'level') parent[key] = undefined;
-            return <Popped level={parent.level} />;
-        }
-    }
-
+export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {    
     return (
         <div className="flex flex-col">
             <div className="flex flex-row">
@@ -105,6 +96,14 @@ export function CirclesLayerView(props: {
     if (Tree.is(props.l, circle)) {
         return <CircleView c={props.l} level={props.level} />;
     } else if (Tree.is(props.l, fourCircles)) {
+        if (testForEmpty(props.l)) {
+            const parent = Tree.parent(props.l);
+            if (Tree.is(parent, fourCircles)) {
+                const key = Tree.key(props.l) as keyof typeof parent;
+                if (key != 'level') parent[key] = undefined;
+                return <Popped level={parent.level} />;
+            } 
+        }
         return <FourCirclesView fc={props.l} />;
     } else {
         return <Popped level={props.level} />;
