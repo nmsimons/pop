@@ -11,6 +11,7 @@ export function ReactApp(props: {
     container: IFluidContainer;
 }): JSX.Element {
     const [invalidations, setInvalidations] = useState(0);
+
     const appRoot = props.data.root;
 
     // Register for tree deltas when the component mounts.
@@ -25,26 +26,52 @@ export function ReactApp(props: {
     const classes =
         'flex flex-col gap-3 items-center justify-center mt-6 content-center select-none relative w-full';
 
-    if (testForEmpty(appRoot)) {
-        return (
-            <div className={classes}>
-                <div className="scale-50 md:scale-75 lg:scale-100">
-                    <CirclesLayerView l={appRoot} level={1} />
-                </div>
-                <Explanation />
-                <AgainAgain fc={appRoot}/>
+    const counter = new Map<string, number>();
+    countColors(appRoot, counter);
+
+    return (
+        <div className={classes}>
+            <div className="scale-75 md:scale-100">
+                <CirclesLayerView l={appRoot} level={1} />
             </div>
-        );
-    } else {
-        return (
-            <div className={classes}>
-                <div className="scale-50 md:scale-75 lg:scale-100">
-                    <CirclesLayerView l={appRoot} level={1} />
-                </div>
-                <Explanation />
-            </div>
-        );
-    }
+            <Explanation />
+            <ColorCount colorCount={counter} />
+            <AgainAgain fc={appRoot} />
+            <div className='h-16' />
+        </div>
+    );
+}
+
+export function ColorCount(props: { colorCount: Map<string, number> }): JSX.Element {
+    return (
+        <div className="flex flex-row max-w-sm justify-between w-full">
+            {[...colorMap.values()].map((k) => (
+                <CircleWithCount
+                    key={k}
+                    color={k}
+                    count={props.colorCount.get(k) ?? 0}
+                />
+            ))}
+        </div>
+    );
+}
+
+export function CircleWithCount(props: {
+    count: number;
+    color: string;
+}): JSX.Element {
+    const color = { background: props.color };
+
+    return (
+        <div
+            style={color}
+            className={
+                'flex items-center justify-center font-bold text-lg text-white border-0 rounded-full scale-95 w-14 h-14'
+            }
+        >
+            {props.count}
+        </div>
+    );
 }
 
 export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
@@ -151,10 +178,36 @@ export function Explanation(): JSX.Element {
 }
 
 export function AgainAgain(props: { fc: FourCircles }): JSX.Element {
-    return (
-        <div className='transition-all text-lg hover:scale-125' onClick={() => againAgain(props.fc)}>again again</div>
-    )
+    if (testForEmpty(props.fc)) {
+        return (
+            <div
+                className="transition-all text-lg hover:scale-125"
+                onClick={() => againAgain(props.fc)}
+            >
+                again again
+            </div>
+        );
+    }
+    return <></>;
 }
+
+export const countColors = (
+    item: FourCircles | Circle | undefined,
+    counter: Map<string, number>
+): Map<string, number> => {
+    if (Tree.is(item, circle)) {
+        counter.set(item.color, (counter.get(item.color) ?? 0) + 1);
+        return counter;
+    } else if (Tree.is(item, fourCircles)) {
+        countColors(item.circle1, counter);
+        countColors(item.circle2, counter);
+        countColors(item.circle3, counter);
+        countColors(item.circle4, counter);
+        return counter;
+    } else {
+        return counter;
+    }
+};
 
 export const createFourCircles = (level: number) => {
     return fourCircles.create({
