@@ -12,27 +12,27 @@ import { getRandomColor } from './react_app';
 const sb = new SchemaBuilder({ scope: '6404be1d-5e53-43f3-ac45-113c96a7c31b' });
 
 export const circle = sb.object('circle', {
-    level: sb.number,
-    color: sb.string
+    color: sb.string,
 });
 
 export const fourCircles = sb.objectRecursive('fourCircles', {
     circle1: TreeFieldSchema.createUnsafe(FieldKinds.optional, [
         circle,
-        () => fourCircles,        
+        () => fourCircles,
     ]),
     circle2: TreeFieldSchema.createUnsafe(FieldKinds.optional, [
         circle,
-        () => fourCircles,        
+        () => fourCircles,
     ]),
     circle3: TreeFieldSchema.createUnsafe(FieldKinds.optional, [
         circle,
-        () => fourCircles,        
+        () => fourCircles,
     ]),
     circle4: TreeFieldSchema.createUnsafe(FieldKinds.optional, [
         circle,
-        () => fourCircles,        
+        () => fourCircles,
     ]),
+    level: TreeFieldSchema.createUnsafe(FieldKinds.required, [sb.number]),
 });
 
 export type Circle = TypedNode<typeof circle>;
@@ -44,25 +44,22 @@ export const appSchemaConfig = buildTreeConfiguration({
     schema: appSchema,
     initialTree: {
         circle1: {
-            level: 1,
             color: getRandomColor(),
-            [typeNameSymbol]: '6404be1d-5e53-43f3-ac45-113c96a7c31b.circle',            
+            [typeNameSymbol]: '6404be1d-5e53-43f3-ac45-113c96a7c31b.circle',
         },
         circle2: {
-            level: 1,
             color: getRandomColor(),
             [typeNameSymbol]: '6404be1d-5e53-43f3-ac45-113c96a7c31b.circle',
         },
         circle3: {
-            level: 1,
             color: getRandomColor(),
             [typeNameSymbol]: '6404be1d-5e53-43f3-ac45-113c96a7c31b.circle',
         },
         circle4: {
-            level: 1,
             color: getRandomColor(),
             [typeNameSymbol]: '6404be1d-5e53-43f3-ac45-113c96a7c31b.circle',
         },
+        level: 1,
     },
     allowedSchemaModifications: AllowedUpdateType.SchemaCompatible,
 });

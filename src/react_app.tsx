@@ -24,7 +24,7 @@ export function ReactApp(props: {
     }, [invalidations]);
 
     useEffect(() => {
-        setVictory(countMaxLevelCircles(appRoot) == (4 ** (_MaxLevel - 1)));
+        setVictory(testForEmpty(appRoot));
     }, [invalidations]);
 
     const classes =
@@ -36,7 +36,7 @@ export function ReactApp(props: {
                 <div className="absolute animate-bounce text-xl font-semibold">
                     win
                 </div>
-                <CirclesLayerView l={appRoot} />
+                <CirclesLayerView l={appRoot} level={1} />
                 <Explanation />
             </div>
         );
@@ -44,7 +44,7 @@ export function ReactApp(props: {
         return (
             <div className={classes}>
                 <div className="scale-50 md:scale-75 lg:scale-100">
-                    <CirclesLayerView l={appRoot} />
+                    <CirclesLayerView l={appRoot} level={1} />
                 </div>
                 <Explanation />
             </div>
@@ -53,15 +53,24 @@ export function ReactApp(props: {
 }
 
 export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
+    if (testForEmpty(props.fc)) {
+        const parent = Tree.parent(props.fc);
+        if (Tree.is(parent, fourCircles)) {
+            const key = Tree.key(props.fc) as keyof typeof parent;
+            if (key != 'level') parent[key] = undefined;
+            return <Popped level={parent.level} />;
+        }
+    }
+
     return (
         <div className="flex flex-col">
             <div className="flex flex-row">
-                <CirclesLayerView l={props.fc.circle1} />
-                <CirclesLayerView l={props.fc.circle2} />
+                <CirclesLayerView l={props.fc.circle1} level={props.fc.level} />
+                <CirclesLayerView l={props.fc.circle2} level={props.fc.level} />
             </div>
             <div className="flex flex-row">
-                <CirclesLayerView l={props.fc.circle3} />
-                <CirclesLayerView l={props.fc.circle4} />
+                <CirclesLayerView l={props.fc.circle3} level={props.fc.level} />
+                <CirclesLayerView l={props.fc.circle4} level={props.fc.level} />
             </div>
         </div>
     );
@@ -69,26 +78,27 @@ export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
 
 export function CirclesLayerView(props: {
     l: Circle | FourCircles | undefined;
+    level: number;
 }): JSX.Element {
     if (Tree.is(props.l, circle)) {
-        return <CircleView c={props.l} />;
+        return <CircleView c={props.l} level={props.level} />;
     } else if (Tree.is(props.l, fourCircles)) {
         return <FourCirclesView fc={props.l} />;
     } else {
-        return <Popped />;
+        return <Popped level={props.level} />;
     }
 }
 
-export function CircleView(props: { c: Circle }): JSX.Element {
+export function CircleView(props: { c: Circle; level: number }): JSX.Element {
     const popCircle = () => {
         const parent = Tree.parent(props.c);
-        if (Tree.is(parent, fourCircles) && props.c.level == _MaxLevel - 1) {
+        if (Tree.is(parent, fourCircles) && props.level == _MaxLevel - 1) {
             const key = Tree.key(props.c) as keyof typeof parent;
-            parent[key] = undefined;
-        } else if (Tree.is(parent, fourCircles) && props.c.level < _MaxLevel) {
-            const fc = createFourCircles(props.c.level + 1);
+            if (key != 'level') parent[key] = undefined;
+        } else if (Tree.is(parent, fourCircles) && props.level < _MaxLevel) {
+            const fc = createFourCircles(props.level + 1);
             const key = Tree.key(props.c) as keyof typeof parent;
-            parent[key] = fc;
+            if (key != 'level') parent[key] = fc;
         }
     };
 
@@ -103,9 +113,9 @@ export function CircleView(props: { c: Circle }): JSX.Element {
     };
 
     const size =
-        props.c.level === _MaxLevel
-            ? circleSizeMap.get(props.c.level) + ' invisible'
-            : circleSizeMap.get(props.c.level);
+        props.level === _MaxLevel
+            ? circleSizeMap.get(props.level) + ' invisible'
+            : circleSizeMap.get(props.level);
 
     const color = { background: props.c.color };
 
@@ -122,9 +132,9 @@ export function CircleView(props: { c: Circle }): JSX.Element {
     );
 }
 
-export function Popped(): JSX.Element {
-    const size = circleSizeMap.get(_MaxLevel - 1) + ' invisible';
-    return (<div className={'border-0 rounded-full scale-95 ' + size}></div>)
+export function Popped(props: { level: number }): JSX.Element {
+    const size = circleSizeMap.get(props.level) + ' invisible';
+    return <div className={'border-0 rounded-full scale-95 ' + size}></div>;
 }
 
 export function Explanation(): JSX.Element {
@@ -140,27 +150,22 @@ export function Explanation(): JSX.Element {
 
 export const createFourCircles = (level: number) => {
     return fourCircles.create({
-        circle1: circle.create({ level: level, color: getRandomColor() }),
-        circle2: circle.create({ level: level, color: getRandomColor() }),
-        circle3: circle.create({ level: level, color: getRandomColor() }),
-        circle4: circle.create({ level: level, color: getRandomColor() }),
+        circle1: circle.create({ color: getRandomColor() }),
+        circle2: circle.create({ color: getRandomColor() }),
+        circle3: circle.create({ color: getRandomColor() }),
+        circle4: circle.create({ color: getRandomColor() }),
+        level: level,
     });
 };
 
-export const countMaxLevelCircles = (
-    item: FourCircles | Circle | undefined
-): number => {
-    if (item === undefined) return 1;
-
-    if (Tree.is(item, fourCircles)) {
-        return (
-            countMaxLevelCircles(item.circle1) +
-            countMaxLevelCircles(item.circle2) +
-            countMaxLevelCircles(item.circle3) +
-            countMaxLevelCircles(item.circle4)
-        );
-    }
-    return 0;
+export const testForEmpty = (fc: FourCircles) => {
+    if (
+        fc.circle1 == undefined &&
+        fc.circle2 == undefined &&
+        fc.circle3 == undefined &&
+        fc.circle4 == undefined
+    ) return true;
+    return false;
 };
 
 const circleSizeMap = new Map<number, string>([
