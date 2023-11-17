@@ -16,7 +16,7 @@ module.exports = {
         maxAssetSize: 4000000,
         maxEntrypointSize: 4000000,
     },
-    module: {        
+    module: {
         rules: [
             // Necessary in order to use TypeScript
             {
@@ -49,6 +49,14 @@ module.exports = {
                     },
                     {
                         loader: 'css-loader',
+                    },
+                ],
+            },
+            {
+                test: /\.mp3$/,
+                use: [
+                    {
+                        loader: 'file-loader',                        
                     },
                 ],
             },

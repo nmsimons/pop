@@ -34,7 +34,8 @@
         "react-dnd": "^16.0.1",
         "react-dnd-html5-backend": "^16.0.1",
         "react-dom": "^18.2.0",
-        "react-transition-state": "^2.1.0"
+        "react-transition-state": "^2.1.0",
+        "use-sound": "^4.0.1"
     },
     "devDependencies": {
         "@fluid-experimental/devtools": "2.0.0-dev.7.3.0.211848",
@@ -50,6 +51,7 @@
         "dotenv-webpack": "^7.1.1",
         "eslint": "^8.23.1",
         "eslint-plugin-react": "^7.31.8",
+        "file-loader": "^6.2.0",
         "html-webpack-plugin": "^4.5.2",
         "markdown-magic": "^2.6.1",
         "markdown-magic-package-scripts": "^1.2.2",

@@ -3,7 +3,10 @@ import { TreeView } from '@fluid-experimental/tree2';
 import { Circle, FourCircles, circle, fourCircles } from './schema';
 import { IFluidContainer } from 'fluid-framework';
 import { Tree } from '@fluid-experimental/tree2';
-import { countColors, colorMap, trimTree, createFourCircles, circleSizeMap, testForEmpty, againAgain } from './utils'
+import { countColors, colorMap, trimTree, createFourCircles, circleSizeMap, testForEmpty, againAgain } from './utils';
+import useSound from 'use-sound';
+import pop from './pop.mp3';
+import divide from './divide.mp3';
 
 const _MaxLevel = 5;
 
@@ -104,25 +107,30 @@ export function CirclesLayerView(props: {
 }
 
 export function CircleView(props: { c: Circle; level: number }): JSX.Element {
+    const [playPop] = useSound(pop, { volume: 0.10 });
+    const [playDivide] = useSound(divide, { volume: 0.20 });
+
     const popCircle = () => {
         const parent = Tree.parent(props.c);
         if (Tree.is(parent, fourCircles) && props.level == _MaxLevel - 1) {
+            playPop();
             const key = Tree.key(props.c) as keyof typeof parent;
             if (key != 'level') parent[key] = undefined;
             trimTree(parent);            
         } else if (Tree.is(parent, fourCircles) && props.level < _MaxLevel) {
+            playDivide();
             const fc = createFourCircles(props.level + 1);
             const key = Tree.key(props.c) as keyof typeof parent;
             if (key != 'level') parent[key] = fc;
         }
     };
 
-    const handleClick = () => {
+    const handleClick = () => {        
         popCircle();
     };
 
     const handleMouseEnter = (e: React.MouseEvent) => {
-        if (e.buttons > 0) {
+        if (e.buttons > 0) {            
             popCircle();
         }
     };
