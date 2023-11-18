@@ -109,29 +109,34 @@ export function CirclesLayerView(props: {
 export function CircleView(props: { c: Circle; level: number }): JSX.Element {
     const [playPop] = useSound(pop, { volume: 0.10 });
     const [playDivide] = useSound(divide, { volume: 0.20 });
+    const [mounted, setMounted] = useState(false);
 
-    const popCircle = () => {
-        const parent = Tree.parent(props.c);
-        if (Tree.is(parent, fourCircles) && props.level == _MaxLevel - 1) {
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
+    const popCircle = (c: Circle, level: number) => {
+        const parent = Tree.parent(c);
+        if (Tree.is(parent, fourCircles) && level == _MaxLevel - 1) {
             playPop();
-            const key = Tree.key(props.c) as keyof typeof parent;
+            const key = Tree.key(c) as keyof typeof parent;
             if (key != 'level') parent[key] = undefined;
             trimTree(parent);            
-        } else if (Tree.is(parent, fourCircles) && props.level < _MaxLevel) {
+        } else if (Tree.is(parent, fourCircles) && level < _MaxLevel) {
             playDivide();
-            const fc = createFourCircles(props.level + 1);
-            const key = Tree.key(props.c) as keyof typeof parent;
+            const fc = createFourCircles(level + 1);
+            const key = Tree.key(c) as keyof typeof parent;
             if (key != 'level') parent[key] = fc;
         }
     };
 
     const handleClick = () => {        
-        popCircle();
+        popCircle(props.c, props.level);
     };
 
     const handleMouseEnter = (e: React.MouseEvent) => {
         if (e.buttons > 0) {            
-            popCircle();
+            popCircle(props.c, props.level);
         }
     };
 
@@ -146,8 +151,8 @@ export function CircleView(props: { c: Circle; level: number }): JSX.Element {
         <div
             style={color}
             className={
-                'transition-all duration-500 ease-in-out border-0 rounded-full scale-95 hover:scale-100 shadow-md ' +
-                size
+                'transition-all ease-in-out duration-100 border-0 rounded-full hover:scale-100 shadow-md ' +
+                size + (mounted ? ' scale-95' : ' scale-90')
             }
             onMouseEnter={(e) => handleMouseEnter(e)}
             onClick={() => handleClick()}
@@ -156,12 +161,18 @@ export function CircleView(props: { c: Circle; level: number }): JSX.Element {
 }
 
 export function Popped(props: { level: number }): JSX.Element {
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true)
+    }, [])
+
     const size = circleSizeMap.get(props.level) + ' ';
     return (
         <div
             className={
-                'border-2 border-gray-300 border-dashed bg-transparent rounded-full scale-95 ' +
-                size
+                'transition-all ease-in-out duration-100 border-2 border-gray-300 border-dashed bg-transparent rounded-full ' +
+                size + (mounted ? ' scale-95' : ' scale-75')
             }
         ></div>
     );
