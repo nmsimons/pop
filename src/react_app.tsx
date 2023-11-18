@@ -165,7 +165,7 @@ export function CircleView(props: { c: Circle; level: number }): JSX.Element {
             }           
             onMouseEnter={(e) => handleMouseEnter(e)}
             onClick={() => handleClick()}
-        >{(mounted ? 1 : 0).toString()}</div>
+        ></div>
     );
 }
 
