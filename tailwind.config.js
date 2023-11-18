@@ -2,7 +2,21 @@
 module.exports = {
     content: ['./src/**/*.{js,jsx,ts,tsx}'],
     theme: {
-        extend: {},
-    },
+        extend: {
+          animation: {
+            bump: 'bump 1s',
+          },
+          keyframes: {
+            bump: {
+              '0%': {
+                transform: 'translateY(-25%)',                
+              },
+              '50%': {
+                transform: 'translateY(0)',                
+              },              
+            },
+          },
+        },
+      },
     plugins: [],
 };

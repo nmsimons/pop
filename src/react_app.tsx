@@ -64,16 +64,24 @@ export function CircleWithCount(props: {
     count: number;
     color: string;
 }): JSX.Element {
+
+    const [count, setCount] = useState(0);    
+    
+    useEffect(() => {                   
+        setCount(props.count)
+    }, [props.count])
+
     const color = { background: props.color };
 
     return (
         <div
             style={color}
             className={
-                'flex items-center justify-center font-bold text-lg text-white border-0 rounded-full scale-95 w-14 h-14'
+                'transition-all ease-in-out flex items-center justify-center font-bold text-lg text-white ' + 
+                'border-0 rounded-full w-14 h-14 ' + (count == props.count ? ' animate-bump' : '')
             }
         >
-            {props.count}
+            {count}
         </div>
     );
 }
@@ -99,7 +107,7 @@ export function CirclesLayerView(props: {
 }): JSX.Element {
     if (Tree.is(props.l, circle)) {
         return <CircleView c={props.l} level={props.level} />;
-    } else if (Tree.is(props.l, fourCircles)) {        
+    } else if (Tree.is(props.l, fourCircles)) {
         return <FourCirclesView fc={props.l} />;
     } else {
         return <Popped level={props.level} />;
@@ -121,7 +129,7 @@ export function CircleView(props: { c: Circle; level: number }): JSX.Element {
             playPop();
             const key = Tree.key(c) as keyof typeof parent;
             if (key != 'level') parent[key] = undefined;
-            trimTree(parent);            
+            trimTree(parent);
         } else if (Tree.is(parent, fourCircles) && level < _MaxLevel) {
             playDivide();
             const fc = createFourCircles(level + 1);
@@ -130,12 +138,12 @@ export function CircleView(props: { c: Circle; level: number }): JSX.Element {
         }
     };
 
-    const handleClick = () => {        
+    const handleClick = () => {
         popCircle(props.c, props.level);
     };
 
     const handleMouseEnter = (e: React.MouseEvent) => {
-        if (e.buttons > 0) {            
+        if (e.buttons > 0) {
             popCircle(props.c, props.level);
         }
     };
