@@ -8,10 +8,12 @@ import {
     typeNameSymbol,
 } from '@fluid-experimental/tree2';
 import { getRandomColor } from './utils';
+import { Guid } from 'guid-typescript';
 
 const sb = new SchemaBuilder({ scope: '6404be1d-5e53-43f3-ac45-113c96a7c31b' });
 
 export const circle = sb.object('circle', {
+    id: sb.string,
     color: sb.string,
 });
 
@@ -44,18 +46,22 @@ export const appSchemaConfig = buildTreeConfiguration({
     schema: appSchema,
     initialTree: {
         circle1: {
+            id: Guid.create().toString(),
             color: getRandomColor(),
             [typeNameSymbol]: '6404be1d-5e53-43f3-ac45-113c96a7c31b.circle',
         },
         circle2: {
+            id: Guid.create().toString(),
             color: getRandomColor(),
             [typeNameSymbol]: '6404be1d-5e53-43f3-ac45-113c96a7c31b.circle',
         },
         circle3: {
+            id: Guid.create().toString(),
             color: getRandomColor(),
             [typeNameSymbol]: '6404be1d-5e53-43f3-ac45-113c96a7c31b.circle',
         },
         circle4: {
+            id: Guid.create().toString(),
             color: getRandomColor(),
             [typeNameSymbol]: '6404be1d-5e53-43f3-ac45-113c96a7c31b.circle',
         },

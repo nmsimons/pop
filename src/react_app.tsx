@@ -119,9 +119,9 @@ export function CircleView(props: { c: Circle; level: number }): JSX.Element {
     const [playDivide] = useSound(divide, { volume: 0.20 });
     const [mounted, setMounted] = useState(false);
 
-    useEffect(() => {
-        setMounted(true)
-    }, [])
+    useEffect(() => {        
+        setMounted(true)        
+    }, [])    
 
     const popCircle = (c: Circle, level: number) => {
         const parent = Tree.parent(c);
@@ -157,14 +157,15 @@ export function CircleView(props: { c: Circle; level: number }): JSX.Element {
 
     return (
         <div
+            key={props.c.id}
             style={color}
             className={
                 'transition-all ease-in-out duration-100 border-0 rounded-full hover:scale-100 shadow-md ' +
                 size + (mounted ? ' scale-95' : ' scale-90')
-            }
+            }           
             onMouseEnter={(e) => handleMouseEnter(e)}
             onClick={() => handleClick()}
-        ></div>
+        >{(mounted ? 1 : 0).toString()}</div>
     );
 }
 

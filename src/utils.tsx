@@ -1,5 +1,6 @@
 import { Circle, FourCircles, circle, fourCircles } from './schema';
 import { Tree } from '@fluid-experimental/tree2';
+import { Guid } from 'guid-typescript';
 
 
 export const trimTree = (fc: FourCircles) => {
@@ -33,20 +34,20 @@ export const countColors = (
 
 export const createFourCircles = (level: number) => {
     return fourCircles.create({
-        circle1: circle.create({ color: getRandomColor() }),
-        circle2: circle.create({ color: getRandomColor() }),
-        circle3: circle.create({ color: getRandomColor() }),
-        circle4: circle.create({ color: getRandomColor() }),
+        circle1: circle.create({ id: Guid.create().toString(), color: getRandomColor() }),
+        circle2: circle.create({ id: Guid.create().toString(), color: getRandomColor() }),
+        circle3: circle.create({ id: Guid.create().toString(), color: getRandomColor() }),
+        circle4: circle.create({ id: Guid.create().toString(), color: getRandomColor() }),
         level: level,
     });
 };
 
 export const againAgain = (fc: FourCircles) => {
     if (testForEmpty(fc)) {
-        fc.circle1 = circle.create({ color: getRandomColor() });
-        fc.circle2 = circle.create({ color: getRandomColor() });
-        fc.circle3 = circle.create({ color: getRandomColor() });
-        fc.circle4 = circle.create({ color: getRandomColor() });
+        fc.circle1 = circle.create({id: Guid.create().toString(), color: getRandomColor() });
+        fc.circle2 = circle.create({id: Guid.create().toString(), color: getRandomColor() });
+        fc.circle3 = circle.create({id: Guid.create().toString(), color: getRandomColor() });
+        fc.circle4 = circle.create({id: Guid.create().toString(), color: getRandomColor() });
     }
 };
 
