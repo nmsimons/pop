@@ -28,11 +28,11 @@ export function ReactApp(props: {
     // Register for tree deltas when the component mounts.
     // Any time the tree changes, the app will update
     useEffect(() => {
-        // Returns the cleanup function to be invoked when the component unmounts.
-        return Tree.on(appRoot, 'afterChange', () => {
+        const unsubscribe = Tree.on(appRoot, 'afterChange', () => {
             setInvalidations(invalidations + Math.random());
         });
-    }, [invalidations]);
+        return unsubscribe;
+    }, []);
 
     const classes =
         'flex flex-col gap-3 items-center justify-center mt-6 content-center select-none relative w-full';
