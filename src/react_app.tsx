@@ -3,10 +3,17 @@ import { TreeView } from '@fluid-experimental/tree2';
 import { Circle, FourCircles, circle, fourCircles } from './schema';
 import { IFluidContainer } from 'fluid-framework';
 import { Tree } from '@fluid-experimental/tree2';
-import { countColors, colorMap, trimTree, createFourCircles, circleSizeMap, testForEmpty, againAgain } from './utils';
+import {
+    countColors,
+    colorMap,
+    trimTree,
+    createFourCircles,
+    circleSizeMap,
+    testForEmpty,
+    againAgain,
+} from './utils';
 import useSound from 'use-sound';
 import pop from './pop.mp3';
-import divide from './divide.mp3';
 
 const _MaxLevel = 5;
 
@@ -64,12 +71,11 @@ export function CircleWithCount(props: {
     count: number;
     color: string;
 }): JSX.Element {
+    const [count, setCount] = useState(0);
 
-    const [count, setCount] = useState(0);    
-    
-    useEffect(() => {                   
-        setCount(props.count)
-    }, [props.count])
+    useEffect(() => {
+        setCount(props.count);
+    }, [props.count]);
 
     const color = { background: props.color };
 
@@ -77,8 +83,9 @@ export function CircleWithCount(props: {
         <div
             style={color}
             className={
-                'transition-all ease-in-out flex items-center justify-center font-bold text-lg text-white ' + 
-                'border-0 rounded-full w-14 h-14 ' + (count == props.count ? ' animate-bump' : '')
+                'transition-all ease-in-out flex items-center justify-center font-bold text-lg text-white ' +
+                'border-0 rounded-full w-14 h-14 ' +
+                (count == props.count ? ' animate-bump' : '')
             }
         >
             {count}
@@ -86,7 +93,7 @@ export function CircleWithCount(props: {
     );
 }
 
-export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
+export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {        
     return (
         <div className="flex flex-col">
             <div className="flex flex-row">
@@ -115,23 +122,20 @@ export function CirclesLayerView(props: {
 }
 
 export function CircleView(props: { c: Circle; level: number }): JSX.Element {
-    const [playPop] = useSound(pop, { volume: 0.10 });
-    const [playDivide] = useSound(divide, { volume: 0.20 });
     const [mounted, setMounted] = useState(false);
+    const [playPop] = useSound(pop, { volume: 0.1 });       
 
-    useEffect(() => {        
-        setMounted(true)        
-    }, [])    
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const popCircle = (c: Circle, level: number) => {
         const parent = Tree.parent(c);
-        if (Tree.is(parent, fourCircles) && level == _MaxLevel - 1) {
-            playPop();
+        if (Tree.is(parent, fourCircles) && level == _MaxLevel - 1) {            
             const key = Tree.key(c) as keyof typeof parent;
             if (key != 'level') parent[key] = undefined;
             trimTree(parent);
-        } else if (Tree.is(parent, fourCircles) && level < _MaxLevel) {
-            playDivide();
+        } else if (Tree.is(parent, fourCircles) && level < _MaxLevel) {           
             const fc = createFourCircles(level + 1);
             const key = Tree.key(c) as keyof typeof parent;
             if (key != 'level') parent[key] = fc;
@@ -139,11 +143,13 @@ export function CircleView(props: { c: Circle; level: number }): JSX.Element {
     };
 
     const handleClick = () => {
+        playPop();
         popCircle(props.c, props.level);
     };
 
     const handleMouseEnter = (e: React.MouseEvent) => {
         if (e.buttons > 0) {
+            playPop();
             popCircle(props.c, props.level);
         }
     };
@@ -161,8 +167,9 @@ export function CircleView(props: { c: Circle; level: number }): JSX.Element {
             style={color}
             className={
                 'transition-all ease-in-out duration-100 border-0 rounded-full hover:scale-100 shadow-md ' +
-                size + (mounted ? ' scale-95' : ' scale-90')
-            }           
+                size +
+                (mounted ? ' scale-95' : ' scale-90')
+            }
             onMouseEnter={(e) => handleMouseEnter(e)}
             onClick={() => handleClick()}
         ></div>
@@ -171,17 +178,18 @@ export function CircleView(props: { c: Circle; level: number }): JSX.Element {
 
 export function Popped(props: { level: number }): JSX.Element {
     const [mounted, setMounted] = useState(false);
-
-    useEffect(() => {
-        setMounted(true)
-    }, [])
+    
+    useEffect(() => {        
+        setMounted(true);
+    }, []);
 
     const size = circleSizeMap.get(props.level) + ' ';
     return (
         <div
             className={
                 'transition-all ease-in-out duration-100 border-2 border-gray-300 border-dashed bg-transparent rounded-full ' +
-                size + (mounted ? ' scale-95' : ' scale-75')
+                size +
+                (mounted ? ' scale-95' : ' scale-75')
             }
         ></div>
     );
@@ -211,5 +219,3 @@ export function AgainAgain(props: { fc: FourCircles }): JSX.Element {
     }
     return <></>;
 }
-
-
