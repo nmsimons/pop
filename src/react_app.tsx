@@ -13,7 +13,7 @@ import {
 import useSound from 'use-sound';
 import pop from './pop.mp3';
 
-const _MaxLevel = 6;
+const _MaxLevel = 5;
 
 export function ReactApp(props: {
     data: TreeView<FourCircles>;
