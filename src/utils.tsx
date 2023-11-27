@@ -1,4 +1,4 @@
-import { Circle, FourCircles, circle, fourCircles } from './schema';
+import { FourCircles, circle, fourCircles } from './schema';
 import { Tree } from '@fluid-experimental/tree2';
 import { Guid } from 'guid-typescript';
 
@@ -11,24 +11,6 @@ export const trimTree = (fc: FourCircles) => {
             if (key != 'level') parent[key] = undefined;
             trimTree(parent);
         }
-    }
-};
-
-export const countColors = (
-    item: FourCircles | Circle | undefined,
-    counter: Map<string, number>
-): Map<string, number> => {
-    if (Tree.is(item, circle)) {
-        counter.set(item.color, (counter.get(item.color) ?? 0) + 1);
-        return counter;
-    } else if (Tree.is(item, fourCircles)) {
-        countColors(item.circle1, counter);
-        countColors(item.circle2, counter);
-        countColors(item.circle3, counter);
-        countColors(item.circle4, counter);
-        return counter;
-    } else {
-        return counter;
     }
 };
 

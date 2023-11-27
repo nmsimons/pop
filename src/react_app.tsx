@@ -3,9 +3,7 @@ import { TreeView } from '@fluid-experimental/tree2';
 import { Circle, FourCircles, circle, fourCircles } from './schema';
 import { IFluidContainer } from 'fluid-framework';
 import { Tree } from '@fluid-experimental/tree2';
-import {
-    countColors,
-    colorMap,
+import {     
     trimTree,
     createFourCircles,
     circleSizeMap,
@@ -15,7 +13,7 @@ import {
 import useSound from 'use-sound';
 import pop from './pop.mp3';
 
-const _MaxLevel = 5;
+const _MaxLevel = 6;
 
 export function ReactApp(props: {
     data: TreeView<FourCircles>;
@@ -36,59 +34,15 @@ export function ReactApp(props: {
 
     const classes =
         'flex flex-col gap-3 items-center justify-center mt-6 content-center select-none relative w-full';
-
-    const counter = new Map<string, number>();
-    countColors(appRoot, counter);
-
+        
     return (
         <div className={classes}>
             <div className="scale-75 md:scale-100">
                 <CirclesLayerView l={appRoot} level={1} />
             </div>
-            <Explanation />
-            <ColorCount colorCount={counter} />
+            <Explanation />            
             <AgainAgain fc={appRoot} />
             <div className="h-16" />
-        </div>
-    );
-}
-
-export function ColorCount(props: { colorCount: Map<string, number> }): JSX.Element {
-    return (
-        <div className="flex flex-row max-w-sm justify-between w-full">
-            {[...colorMap.values()].map((k) => (
-                <CircleWithCount
-                    key={k}
-                    color={k}
-                    count={props.colorCount.get(k) ?? 0}
-                />
-            ))}
-        </div>
-    );
-}
-
-export function CircleWithCount(props: {
-    count: number;
-    color: string;
-}): JSX.Element {
-    const [count, setCount] = useState(0);
-
-    useEffect(() => {
-        setCount(props.count);
-    }, [props.count]);
-
-    const color = { background: props.color };
-
-    return (
-        <div
-            style={color}
-            className={
-                'transition-all ease-in-out flex items-center justify-center font-bold text-lg text-white ' +
-                'border-0 rounded-full w-14 h-14 ' +
-                (count == props.count ? ' animate-bump' : '')
-            }
-        >
-            {count}
         </div>
     );
 }
