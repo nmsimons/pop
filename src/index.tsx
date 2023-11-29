@@ -5,7 +5,7 @@ import { loadFluidData, containerSchema } from './infra/fluid';
 import { initializeDevtools } from '@fluid-experimental/devtools';
 import { devtoolsLogger } from './infra/clientProps';
 import { ITree } from '@fluid-experimental/tree2';
-import { appSchemaConfig } from './schema';
+import { treeConfiguration } from './schema';
 import './output.css';
 import { ReactApp } from './react_app';
 
@@ -26,7 +26,7 @@ async function main() {
 
     // Initialize the SharedTree Data Structure
     const appData = (container.initialObjects.appData as ITree).schematize(
-        appSchemaConfig
+        treeConfiguration
     );
 
     // Initialize debugging tools

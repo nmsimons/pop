@@ -10,6 +10,8 @@
         "jsx": "react",
         "moduleResolution": "node",
         "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true        
+        "esModuleInterop": true,
+        "noImplicitAny": true,       
+        "skipLibCheck": true
     }
 }

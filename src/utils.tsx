@@ -1,12 +1,11 @@
-import { FourCircles, circle, fourCircles } from './schema';
+import { Circle, FourCircles } from './schema';
 import { Tree } from '@fluid-experimental/tree2';
 import { Guid } from 'guid-typescript';
-
 
 export const trimTree = (fc: FourCircles) => {
     if (testForEmpty(fc)) {
         const parent = Tree.parent(fc);
-        if (Tree.is(parent, fourCircles)) {
+        if (Tree.is(parent, FourCircles)) {
             const key = Tree.key(fc) as keyof typeof parent;
             if (key != 'level') parent[key] = undefined;
             trimTree(parent);
@@ -15,21 +14,21 @@ export const trimTree = (fc: FourCircles) => {
 };
 
 export const createFourCircles = (level: number) => {
-    return fourCircles.create({
-        circle1: circle.create({ id: Guid.create().toString(), color: getRandomColor() }),
-        circle2: circle.create({ id: Guid.create().toString(), color: getRandomColor() }),
-        circle3: circle.create({ id: Guid.create().toString(), color: getRandomColor() }),
-        circle4: circle.create({ id: Guid.create().toString(), color: getRandomColor() }),
+    return new FourCircles({
+        circle1: new Circle({ id: Guid.create().toString(), color: getRandomColor() }),
+        circle2: new Circle({ id: Guid.create().toString(), color: getRandomColor() }),
+        circle3: new Circle({ id: Guid.create().toString(), color: getRandomColor() }),
+        circle4: new Circle({ id: Guid.create().toString(), color: getRandomColor() }),
         level: level,
     });
 };
 
 export const againAgain = (fc: FourCircles) => {
     if (testForEmpty(fc)) {
-        fc.circle1 = circle.create({id: Guid.create().toString(), color: getRandomColor() });
-        fc.circle2 = circle.create({id: Guid.create().toString(), color: getRandomColor() });
-        fc.circle3 = circle.create({id: Guid.create().toString(), color: getRandomColor() });
-        fc.circle4 = circle.create({id: Guid.create().toString(), color: getRandomColor() });
+        fc.circle1 = new Circle({id: Guid.create().toString(), color: getRandomColor() });
+        fc.circle2 = new Circle({id: Guid.create().toString(), color: getRandomColor() });
+        fc.circle3 = new Circle({id: Guid.create().toString(), color: getRandomColor() });
+        fc.circle4 = new Circle({id: Guid.create().toString(), color: getRandomColor() });
     }
 };
 
