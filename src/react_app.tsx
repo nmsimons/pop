@@ -9,6 +9,7 @@ import {
     circleSizeMap,
     testForEmpty,
     againAgain,
+    setCircle,
 } from './utils';
 import useSound from 'use-sound';
 import pop from './pop.mp3';
@@ -87,12 +88,12 @@ export function CircleView(props: { c: Circle; level: number }): JSX.Element {
         const parent = Tree.parent(c);
         if (Tree.is(parent, FourCircles) && level == _MaxLevel - 1) {            
             const key = Tree.key(c) as keyof typeof parent;
-            if (key != 'level') parent[key] = undefined;
+            if (key != 'level') setCircle(parent, key, undefined);
             trimTree(parent);
         } else if (Tree.is(parent, FourCircles) && level < _MaxLevel) {           
             const fc = createFourCircles(level + 1);
             const key = Tree.key(c) as keyof typeof parent;
-            if (key != 'level') parent[key] = fc;
+            if (key != 'level') setCircle(parent, key, fc);
         }
     };
 
