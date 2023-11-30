@@ -55,22 +55,22 @@ export const colorMap = new Map<number, string>([
 export const treeConfiguration = new TreeConfiguration(
     FourCircles,
     () => new FourCircles({
-        circle1: {
+        circle1: new Circle({
             id: Guid.create().toString(),
             color: getRandomColor(),            
-        },
-        circle2: {
-            id: Guid.create().toString(),
-            color: getRandomColor(),           
-        },
-        circle3: {
+        }),
+        circle2: new Circle({
             id: Guid.create().toString(),
             color: getRandomColor(),            
-        },
-        circle4: {
+        }),
+        circle3: new Circle({
             id: Guid.create().toString(),
             color: getRandomColor(),            
-        },
+        }),
+        circle4: new Circle({
+            id: Guid.create().toString(),
+            color: getRandomColor(),            
+        }),
         level: 1,
     })    
 );
