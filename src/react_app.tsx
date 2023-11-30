@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { TreeView } from '@fluid-experimental/tree2';
-import { Circle, FourCircles, circle, fourCircles } from './schema';
+import { Circle, FourCircles } from './schema';
 import { IFluidContainer } from 'fluid-framework';
 import { Tree } from '@fluid-experimental/tree2';
 import {     
@@ -9,6 +9,7 @@ import {
     circleSizeMap,
     testForEmpty,
     againAgain,
+    setCircle,
 } from './utils';
 import useSound from 'use-sound';
 import pop from './pop.mp3';
@@ -66,9 +67,9 @@ export function CirclesLayerView(props: {
     l: Circle | FourCircles | undefined;
     level: number;
 }): JSX.Element {
-    if (Tree.is(props.l, circle)) {
+    if (props.l instanceof Circle) {
         return <CircleView c={props.l} level={props.level} />;
-    } else if (Tree.is(props.l, fourCircles)) {
+    } else if (props.l instanceof FourCircles) {
         return <FourCirclesView fc={props.l} />;
     } else {
         return <Popped level={props.level} />;
@@ -85,14 +86,14 @@ export function CircleView(props: { c: Circle; level: number }): JSX.Element {
 
     const popCircle = (c: Circle, level: number) => {
         const parent = Tree.parent(c);
-        if (Tree.is(parent, fourCircles) && level == _MaxLevel - 1) {            
+        if ((parent instanceof FourCircles) && level == _MaxLevel - 1) {            
             const key = Tree.key(c) as keyof typeof parent;
-            if (key != 'level') parent[key] = undefined;
+            if (key != 'level') setCircle(parent, key, undefined);
             trimTree(parent);
-        } else if (Tree.is(parent, fourCircles) && level < _MaxLevel) {           
+        } else if ((parent instanceof FourCircles) && level < _MaxLevel) {           
             const fc = createFourCircles(level + 1);
             const key = Tree.key(c) as keyof typeof parent;
-            if (key != 'level') parent[key] = fc;
+            if (key != 'level') setCircle(parent, key, fc);
         }
     };
 
