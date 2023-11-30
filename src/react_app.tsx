@@ -67,9 +67,9 @@ export function CirclesLayerView(props: {
     l: Circle | FourCircles | undefined;
     level: number;
 }): JSX.Element {
-    if (Tree.is(props.l, Circle)) {
+    if (props.l instanceof Circle) {
         return <CircleView c={props.l} level={props.level} />;
-    } else if (Tree.is(props.l, FourCircles)) {
+    } else if (props.l instanceof FourCircles) {
         return <FourCirclesView fc={props.l} />;
     } else {
         return <Popped level={props.level} />;
@@ -86,11 +86,11 @@ export function CircleView(props: { c: Circle; level: number }): JSX.Element {
 
     const popCircle = (c: Circle, level: number) => {
         const parent = Tree.parent(c);
-        if (Tree.is(parent, FourCircles) && level == _MaxLevel - 1) {            
+        if ((parent instanceof FourCircles) && level == _MaxLevel - 1) {            
             const key = Tree.key(c) as keyof typeof parent;
             if (key != 'level') setCircle(parent, key, undefined);
             trimTree(parent);
-        } else if (Tree.is(parent, FourCircles) && level < _MaxLevel) {           
+        } else if ((parent instanceof FourCircles) && level < _MaxLevel) {           
             const fc = createFourCircles(level + 1);
             const key = Tree.key(c) as keyof typeof parent;
             if (key != 'level') setCircle(parent, key, fc);

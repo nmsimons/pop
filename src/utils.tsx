@@ -5,7 +5,7 @@ import { Guid } from 'guid-typescript';
 export const trimTree = (fc: FourCircles) => {
     if (testForEmpty(fc)) {
         const parent = Tree.parent(fc);
-        if (Tree.is(parent, FourCircles)) {
+        if (parent instanceof FourCircles) {
             const key = Tree.key(fc) as keyof FourCircles;
             if (key != 'level') setCircle(parent, key, undefined);
             trimTree(parent);
