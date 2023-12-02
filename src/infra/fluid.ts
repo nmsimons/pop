@@ -3,7 +3,7 @@ import { ContainerSchema, IFluidContainer } from 'fluid-framework';
 import { SharedTreeFactory } from '@fluid-experimental/tree2';
 import { clientProps } from './clientProps';
 
-export class MySharedTree {
+export class SharedTree {
     public static getFactory(): SharedTreeFactory {
         return new SharedTreeFactory();
     }
@@ -45,6 +45,6 @@ export const loadFluidData = async (
 
 export const containerSchema: ContainerSchema = {
     initialObjects: {
-        appData: MySharedTree,
+        appData: SharedTree,
     },
 };
