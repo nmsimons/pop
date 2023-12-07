@@ -48,7 +48,14 @@ export function ReactApp(props: {
     );
 }
 
-export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {        
+export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
+    
+    useEffect(() => {        
+        if (props.fc instanceof FourCircles) {
+            trimTree(props.fc);
+        }
+    })
+    
     return (
         <div className="flex flex-col">
             <div className="flex flex-row">
@@ -88,8 +95,7 @@ export function CircleView(props: { c: Circle; level: number }): JSX.Element {
         const parent = Tree.parent(c);
         if ((parent instanceof FourCircles) && level == _MaxLevel - 1) {            
             const key = Tree.key(c) as keyof typeof parent;
-            if (key != 'level') setCircle(parent, key, undefined);
-            trimTree(parent);
+            if (key != 'level') setCircle(parent, key, undefined);            
         } else if ((parent instanceof FourCircles) && level < _MaxLevel) {           
             const fc = createFourCircles(level + 1);
             const key = Tree.key(c) as keyof typeof parent;
@@ -136,7 +142,7 @@ export function Popped(props: { level: number }): JSX.Element {
     
     useEffect(() => {        
         setMounted(true);
-    }, []);
+    }, []);    
 
     const size = circleSizeMap.get(props.level) + ' ';
     return (
