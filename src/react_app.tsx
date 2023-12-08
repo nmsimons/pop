@@ -51,9 +51,7 @@ export function ReactApp(props: {
 export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
     
     useEffect(() => {        
-        if (props.fc instanceof FourCircles) {
-            trimTree(props.fc);
-        }
+        trimTree(props.fc);        
     })
     
     return (
