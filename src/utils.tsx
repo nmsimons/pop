@@ -15,31 +15,66 @@ export const trimTree = (fc: FourCircles) => {
 
 export const createFourCircles = (level: number) => {
     return new FourCircles({
-        circle1: new Circle({ id: Guid.create().toString(), color: getRandomColor() }),
-        circle2: new Circle({ id: Guid.create().toString(), color: getRandomColor() }),
-        circle3: new Circle({ id: Guid.create().toString(), color: getRandomColor() }),
-        circle4: new Circle({ id: Guid.create().toString(), color: getRandomColor() }),
+        circle1: new Circle({
+            id: Guid.create().toString(),
+            color: getRandomColor(),
+        }),
+        circle2: new Circle({
+            id: Guid.create().toString(),
+            color: getRandomColor(),
+        }),
+        circle3: new Circle({
+            id: Guid.create().toString(),
+            color: getRandomColor(),
+        }),
+        circle4: new Circle({
+            id: Guid.create().toString(),
+            color: getRandomColor(),
+        }),
         level: level,
     });
 };
 
 export const againAgain = (fc: FourCircles) => {
-    if (testForEmpty(fc)) {
-        fc.circle1 = new Circle({id: Guid.create().toString(), color: getRandomColor() });
-        fc.circle2 = new Circle({id: Guid.create().toString(), color: getRandomColor() });
-        fc.circle3 = new Circle({id: Guid.create().toString(), color: getRandomColor() });
-        fc.circle4 = new Circle({id: Guid.create().toString(), color: getRandomColor() });
-    }
+    fc.circle1 = new Circle({
+        id: Guid.create().toString(),
+        color: getRandomColor(),
+    });
+    fc.circle2 = new Circle({
+        id: Guid.create().toString(),
+        color: getRandomColor(),
+    });
+    fc.circle3 = new Circle({
+        id: Guid.create().toString(),
+        color: getRandomColor(),
+    });
+    fc.circle4 = new Circle({
+        id: Guid.create().toString(),
+        color: getRandomColor(),
+    });
 };
 
 export const testForEmpty = (fc: FourCircles) => {
-    if (fc.circle1 == undefined &&
-        fc.circle2 == undefined &&
-        fc.circle3 == undefined &&
-        fc.circle4 == undefined)
+    if (
+        empty(fc.circle1) &&
+        empty(fc.circle2) &&
+        empty(fc.circle3) &&
+        empty(fc.circle4)
+    )
         return true;
     return false;
 };
+
+export function empty(c: FourCircles | Circle | undefined) {
+    if (c == undefined) {
+        return true;
+    } else if (c instanceof Circle) {
+        return false;
+    } else {
+        return testForEmpty(c as FourCircles);
+    }
+}
+
 export const circleSizeMap = new Map<number, string>([
     [1, 'w-64 h-64'],
     [2, 'w-32 h-32'],
@@ -49,8 +84,11 @@ export const circleSizeMap = new Map<number, string>([
     [6, 'w-2 h-2'],
 ]);
 
-
 // TODO: why does factoring this logic into this function fix the build?
-export function setCircle(circles: FourCircles, key: Exclude<keyof FourCircles, "level">, value: FourCircles | Circle | undefined) {
+export function setCircle(
+    circles: FourCircles,
+    key: Exclude<keyof FourCircles, 'level'>,
+    value: FourCircles | Circle | undefined
+) {
     circles[key] = value;
 }
