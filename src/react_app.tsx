@@ -5,7 +5,7 @@ import { IFluidContainer } from 'fluid-framework';
 import { Tree } from '@fluid-experimental/tree2';
 import {
     createFourCircles,
-    circleSizeMap,    
+    circleSizeMap,
     againAgain,
     setCircle,
     trimTree,
@@ -51,12 +51,28 @@ export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
     return (
         <div className="flex flex-col">
             <div className="flex flex-row">
-                <CirclesLayerView l={props.fc.circle1} level={props.fc.level} parent={props.fc} />
-                <CirclesLayerView l={props.fc.circle2} level={props.fc.level} parent={props.fc} />
+                <CirclesLayerView
+                    l={props.fc.circle1}
+                    level={props.fc.level}
+                    parent={props.fc}
+                />
+                <CirclesLayerView
+                    l={props.fc.circle2}
+                    level={props.fc.level}
+                    parent={props.fc}
+                />
             </div>
             <div className="flex flex-row">
-                <CirclesLayerView l={props.fc.circle3} level={props.fc.level} parent={props.fc} />
-                <CirclesLayerView l={props.fc.circle4} level={props.fc.level} parent={props.fc} />
+                <CirclesLayerView
+                    l={props.fc.circle3}
+                    level={props.fc.level}
+                    parent={props.fc}
+                />
+                <CirclesLayerView
+                    l={props.fc.circle4}
+                    level={props.fc.level}
+                    parent={props.fc}
+                />
             </div>
         </div>
     );
@@ -65,7 +81,7 @@ export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
 export function CirclesLayerView(props: {
     l: Circle | FourCircles | undefined;
     level: number;
-    parent: FourCircles
+    parent: FourCircles;
 }): JSX.Element {
     if (props.l instanceof Circle) {
         return <CircleView c={props.l} level={props.level} />;
@@ -130,14 +146,14 @@ export function CircleView(props: { c: Circle; level: number }): JSX.Element {
     );
 }
 
-export function Popped(props: { level: number, fc: FourCircles }): JSX.Element {
+export function Popped(props: { level: number; fc: FourCircles }): JSX.Element {
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    const handleClick = () => {        
+    const handleClick = () => {
         trimTree(props.fc);
     };
 

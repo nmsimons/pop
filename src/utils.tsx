@@ -68,11 +68,9 @@ export const testForEmpty = (fc: FourCircles) => {
 export function empty(c: FourCircles | Circle | undefined) {
     if (c == undefined) {
         return true;
-    } else if (c instanceof Circle) {
-        return false;
     } else {
-        return testForEmpty(c as FourCircles);
-    }
+        return false;
+    }    
 }
 
 export const circleSizeMap = new Map<number, string>([
