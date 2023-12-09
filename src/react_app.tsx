@@ -8,6 +8,7 @@ import {
     circleSizeMap,    
     againAgain,
     setCircle,
+    trimTree,
 } from './utils';
 import useSound from 'use-sound';
 import pop from './pop.mp3';
@@ -50,12 +51,12 @@ export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
     return (
         <div className="flex flex-col">
             <div className="flex flex-row">
-                <CirclesLayerView l={props.fc.circle1} level={props.fc.level} />
-                <CirclesLayerView l={props.fc.circle2} level={props.fc.level} />
+                <CirclesLayerView l={props.fc.circle1} level={props.fc.level} parent={props.fc} />
+                <CirclesLayerView l={props.fc.circle2} level={props.fc.level} parent={props.fc} />
             </div>
             <div className="flex flex-row">
-                <CirclesLayerView l={props.fc.circle3} level={props.fc.level} />
-                <CirclesLayerView l={props.fc.circle4} level={props.fc.level} />
+                <CirclesLayerView l={props.fc.circle3} level={props.fc.level} parent={props.fc} />
+                <CirclesLayerView l={props.fc.circle4} level={props.fc.level} parent={props.fc} />
             </div>
         </div>
     );
@@ -64,13 +65,14 @@ export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
 export function CirclesLayerView(props: {
     l: Circle | FourCircles | undefined;
     level: number;
+    parent: FourCircles
 }): JSX.Element {
     if (props.l instanceof Circle) {
         return <CircleView c={props.l} level={props.level} />;
     } else if (props.l instanceof FourCircles) {
         return <FourCirclesView fc={props.l} />;
     } else {
-        return <Popped level={props.level} />;
+        return <Popped level={props.level} fc={props.parent} />;
     }
 }
 
@@ -128,12 +130,22 @@ export function CircleView(props: { c: Circle; level: number }): JSX.Element {
     );
 }
 
-export function Popped(props: { level: number }): JSX.Element {
+export function Popped(props: { level: number, fc: FourCircles }): JSX.Element {
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
     }, []);
+
+    const handleClick = () => {        
+        trimTree(props.fc);
+    };
+
+    const handleMouseEnter = (e: React.MouseEvent) => {
+        if (e.buttons > 0) {
+            trimTree(props.fc);
+        }
+    };
 
     const size = circleSizeMap.get(props.level) + ' ';
     return (
@@ -143,6 +155,8 @@ export function Popped(props: { level: number }): JSX.Element {
                 size +
                 (mounted ? ' scale-95' : ' scale-75')
             }
+            onMouseEnter={(e) => handleMouseEnter(e)}
+            onClick={() => handleClick()}
         ></div>
     );
 }
