@@ -1,5 +1,5 @@
 import { Circle, FourCircles, getRandomColor } from './schema';
-import { Tree } from '@fluid-experimental/tree2';
+import { Tree } from '@fluidframework/tree';
 import { Guid } from 'guid-typescript';
 
 export const trimTree = (fc: FourCircles) => {

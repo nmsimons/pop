@@ -14,18 +14,18 @@
         "start": "npm run dev"
     },
     "dependencies": {
-        "@fluentui/react-icons": "^2.0.221",        
-        "@fluid-experimental/tree2": "2.0.0-dev.7.4.0.217212",
-        "@fluidframework/azure-client": "2.0.0-dev.7.4.0.217212",
-        "@fluidframework/telemetry-utils": "2.0.0-dev.7.4.0.217212",
-        "@fluidframework/test-runtime-utils": "2.0.0-dev.7.4.0.217212",
+        "@fluentui/react-icons": "^2.0.221",
+        "@fluidframework/azure-client": "2.0.0-dev-rc.1.0.0.224419",
+        "@fluidframework/telemetry-utils": "2.0.0-dev-rc.1.0.0.224419",
+        "@fluidframework/test-runtime-utils": "2.0.0-dev-rc.1.0.0.224419",
+        "@fluidframework/tree": "2.0.0-dev-rc.1.0.0.224419",
         "@types/react": "^18.2.0",
         "@types/react-dom": "^18.2.0",
         "axios": "^1.4.0",
         "dotenv": "^16.0.2",
-        "fluid-framework": "2.0.0-dev.7.4.0.217212",
+        "fluid-framework": "2.0.0-dev-rc.1.0.0.224419",
         "guid-typescript": "^1.0.9",
-        "hashids": "^2.2.10",        
+        "hashids": "^2.2.10",
         "react": "^18.2.0",
         "react-dnd": "^16.0.1",
         "react-dnd-html5-backend": "^16.0.1",
@@ -34,12 +34,12 @@
         "use-sound": "^4.0.1"
     },
     "devDependencies": {
-        "@fluid-experimental/devtools": "2.0.0-dev.7.4.0.217212",
-        "@types/debug": "^4.1.7",        
+        "@fluidframework/devtools": "2.0.0-dev-rc.1.0.0.224419",
+        "@types/debug": "^4.1.7",
         "@typescript-eslint/eslint-plugin": "^5.38.0",
         "@typescript-eslint/parser": "^5.38.0",
         "clean-webpack-plugin": "^3.0.0",
-        "copy-webpack-plugin": "^5.1.2",
+        "copy-webpack-plugin": "^11.0.0",
         "cross-env": "^7.0.3",
         "css-loader": "^5",
         "dotenv-webpack": "^7.1.1",
@@ -55,6 +55,6 @@
         "typescript": "~5.3.0",
         "webpack": "^5.89.0",
         "webpack-cli": "^5.1.4",
-        "webpack-dev-server": "^4.15.1"        
+        "webpack-dev-server": "^4.15.1"
     }
 }

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { TreeView } from '@fluid-experimental/tree2';
+import { TreeView } from '@fluidframework/tree';
 import { Circle, FourCircles } from './schema';
 import { IFluidContainer } from 'fluid-framework';
-import { Tree } from '@fluid-experimental/tree2';
+import { Tree } from '@fluidframework/tree';
 import {
     createFourCircles,
     circleSizeMap,

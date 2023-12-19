@@ -4,9 +4,9 @@ import { FourCircles, treeConfiguration } from './schema';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { loadFluidData, containerSchema } from './infra/fluid';
-import { initializeDevtools } from '@fluid-experimental/devtools';
+import { initializeDevtools } from '@fluidframework/devtools';
 import { devtoolsLogger } from './infra/clientProps';
-import { ITree, TreeView } from '@fluid-experimental/tree2';
+import { ITree, TreeView } from '@fluidframework/tree';
 import './output.css';
 import { ReactApp } from './react_app';
 
