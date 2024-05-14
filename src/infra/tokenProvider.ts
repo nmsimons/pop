@@ -6,9 +6,8 @@ import {
 
 import axios from 'axios';
 import { Guid } from 'guid-typescript';
-import { IInsecureUser } from '@fluidframework/test-runtime-utils';
 
-const generateTestUser = (): IInsecureUser => {
+const generateTestUser = () => {
     const user = {
         id: Guid.create().toString(),
         name: '[TEST USER]',
@@ -28,7 +27,7 @@ export class AzureFunctionTokenProvider implements ITokenProvider {
      */
     constructor(
         private readonly azFunctionUrl: string,
-        private readonly user?: Pick<AzureMember, 'userName' | 'userId' | 'additionalDetails'>
+        private readonly user?: Pick<AzureMember<unknown>, 'name' | 'id' | 'additionalDetails'>
     ) {}
 
     public async fetchOrdererToken(
@@ -57,7 +56,7 @@ export class AzureFunctionTokenProvider implements ITokenProvider {
             params: {
                 tenantId,
                 documentId,
-                userName: this.user?.userName,
+                userName: this.user?.name,
                 additionalDetails: this.user?.additionalDetails,
             },
         });
@@ -68,6 +67,6 @@ export class AzureFunctionTokenProvider implements ITokenProvider {
 export const user = generateTestUser();
 
 export const azureUser = {
-    userId: user.id,
-    userName: user.name,
+    id: user.id,
+    name: user.name,
 };

@@ -1,6 +1,7 @@
 import {    
     SchemaFactory,
-    TreeConfiguration
+    TreeConfiguration,
+    ValidateRecursiveSchema
 } from '@fluidframework/tree';
 import { Guid } from 'guid-typescript';
 
@@ -11,24 +12,22 @@ export class Circle extends sb.object('Circle', {
     color: sb.string,
 }) {}
 
-const fourCirclesReference = () => FourCircles;
-sb.fixRecursiveReference(fourCirclesReference);
-export class FourCircles extends sb.object('FourCircles', {
-    circle1: sb.optional([
+export class FourCircles extends sb.objectRecursive('FourCircles', {
+    circle1: sb.optionalRecursive([
         Circle,
-        fourCirclesReference,
+        () => FourCircles,
     ]),
-    circle2: sb.optional([
+    circle2: sb.optionalRecursive([
         Circle,
-        fourCirclesReference,
+        () => FourCircles,
     ]),
-    circle3: sb.optional([
+    circle3: sb.optionalRecursive([
         Circle,
-        fourCirclesReference,
+        () => FourCircles,
     ]),
-    circle4: sb.optional([
+    circle4: sb.optionalRecursive([
         Circle,
-        fourCirclesReference,
+        () => FourCircles,
     ]),
     level: sb.number,
 }) {}
@@ -51,6 +50,14 @@ export const colorMap = new Map<number, string>([
     [3, 'Orange'],
     [4, 'Purple'],
 ]);
+
+{
+	// Due to limitations of TypeScript, recursive schema may not produce type errors when declared incorrectly.
+	// Using ValidateRecursiveSchema helps ensure that mistakes made in the definition of a recursive schema (like `Items`)
+	// will introduce a compile error.
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	type _check = ValidateRecursiveSchema<typeof FourCircles>;
+}
 
 export const treeConfiguration = new TreeConfiguration(
     FourCircles,

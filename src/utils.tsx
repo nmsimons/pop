@@ -1,12 +1,12 @@
 import { Circle, FourCircles, getRandomColor } from './schema';
-import { Tree } from '@fluidframework/tree';
+import { Tree, type } from '@fluidframework/tree';
 import { Guid } from 'guid-typescript';
 
 export const trimTree = (fc: FourCircles) => {
     if (testForEmpty(fc)) {
         const parent = Tree.parent(fc);
         if (parent instanceof FourCircles) {
-            const key = Tree.key(fc) as keyof FourCircles;
+            const key = Tree.key(fc) as Exclude<keyof FourCircles, typeof type>;
             if (key != 'level') setCircle(parent, key, undefined);
             trimTree(parent);
         }
@@ -85,8 +85,8 @@ export const circleSizeMap = new Map<number, string>([
 // TODO: why does factoring this logic into this function fix the build?
 export function setCircle(
     circles: FourCircles,
-    key: Exclude<keyof FourCircles, 'level'>,
+    key: Exclude<keyof FourCircles, typeof type | 'level'>,
     value: FourCircles | Circle | undefined
-) {
+) {    
     circles[key] = value;
 }

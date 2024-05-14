@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { TreeView } from '@fluidframework/tree';
+import { TreeView, type } from '@fluidframework/tree';
 import { Circle, FourCircles } from './schema';
 import { IFluidContainer } from 'fluid-framework';
 import { Tree } from '@fluidframework/tree';
@@ -16,7 +16,7 @@ import pop from './pop.mp3';
 const _MaxLevel = 5;
 
 export function ReactApp(props: {
-    data: TreeView<FourCircles>;
+    data: TreeView<typeof FourCircles>;
     container: IFluidContainer;
 }): JSX.Element {
     const [invalidations, setInvalidations] = useState(0);
@@ -26,7 +26,7 @@ export function ReactApp(props: {
     // Register for tree deltas when the component mounts.
     // Any time the tree changes, the app will update
     useEffect(() => {
-        const unsubscribe = Tree.on(appRoot, 'afterChange', () => {
+        const unsubscribe = Tree.on(appRoot, 'treeChanged', () => {
             setInvalidations(invalidations + Math.random());
         });
         return unsubscribe;
@@ -38,7 +38,7 @@ export function ReactApp(props: {
     return (
         <div className={classes}>
             <div className="scale-75 md:scale-100">
-                <CirclesLayerView l={appRoot} level={1} />
+                <FourCirclesView fc={appRoot} />
             </div>
             <Explanation />
             <AgainAgain fc={appRoot} />
@@ -103,11 +103,11 @@ export function CircleView(props: { c: Circle; level: number }): JSX.Element {
     const popCircle = (c: Circle, level: number) => {
         const parent = Tree.parent(c);
         if (parent instanceof FourCircles && level == _MaxLevel - 1) {
-            const key = Tree.key(c) as keyof typeof parent;
+            const key = Tree.key(c) as Exclude<keyof typeof parent, typeof type>;
             if (key != 'level') setCircle(parent, key, undefined);
         } else if (parent instanceof FourCircles && level < _MaxLevel) {
             const fc = createFourCircles(level + 1);
-            const key = Tree.key(c) as keyof typeof parent;
+            const key = Tree.key(c) as Exclude<keyof typeof parent, typeof type>;
             if (key != 'level') setCircle(parent, key, fc);
         }
     };

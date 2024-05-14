@@ -4,8 +4,6 @@ import { FourCircles, treeConfiguration } from './schema';
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import { loadFluidData, containerSchema } from './infra/fluid';
-import { initializeDevtools } from '@fluidframework/devtools';
-import { devtoolsLogger } from './infra/clientProps';
 import { ITree, TreeView } from '@fluidframework/tree';
 import './output.css';
 import { ReactApp } from './react_app';
@@ -26,20 +24,9 @@ async function main() {
     const { container } = await loadFluidData(containerId, containerSchema);
 
     // Initialize the SharedTree Data Structure
-    const appData: TreeView<FourCircles> = (container.initialObjects.appData as ITree).schematize(
+    const appData: TreeView<typeof FourCircles> = (container.initialObjects.appData as ITree).schematize(
         treeConfiguration
-    );
-
-    // Initialize debugging tools
-    initializeDevtools({
-        logger: devtoolsLogger,
-        initialContainers: [
-            {
-                container,
-                containerKey: 'My Container',
-            },
-        ],
-    });
+    );    
 
     // Render the app - note we attach new containers after render so
     // the app renders instantly on create new flow. The app will be
