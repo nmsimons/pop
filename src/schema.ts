@@ -1,7 +1,8 @@
-import {    
+import {
     SchemaFactory,
+    Tree,
     TreeConfiguration,
-    ValidateRecursiveSchema
+    ValidateRecursiveSchema,    
 } from '@fluidframework/tree';
 import { Guid } from 'guid-typescript';
 
@@ -12,25 +13,102 @@ export class Circle extends sb.object('Circle', {
     color: sb.string,
 }) {}
 
-export class FourCircles extends sb.objectRecursive('FourCircles', {
-    circle1: sb.optionalRecursive([
-        Circle,
-        () => FourCircles,
-    ]),
-    circle2: sb.optionalRecursive([
-        Circle,
-        () => FourCircles,
-    ]),
-    circle3: sb.optionalRecursive([
-        Circle,
-        () => FourCircles,
-    ]),
-    circle4: sb.optionalRecursive([
-        Circle,
-        () => FourCircles,
-    ]),
+export class Item extends sb.objectRecursive('Item', {
+    shape: sb.optionalRecursive([Circle, () => FourCircles]),
     level: sb.number,
-}) {}
+}) {
+    public static _MaxLevel = 4;
+
+    public hydrate() {
+        this.shape = new Circle({
+            id: Guid.create().toString(),
+            color: getRandomColor(),
+        });
+    }
+
+    public pop() {
+        if (Item._MaxLevel === this.level) {
+            this.shape = undefined;
+            this.trim();
+        } else {
+            this.shape = new FourCircles({
+                circle1: Item.createCircle(this.level + 1),
+                circle2: Item.createCircle(this.level + 1),
+                circle3: Item.createCircle(this.level + 1),
+                circle4: Item.createCircle(this.level + 1),
+                level: this.level + 1,
+            });
+        }
+    }
+
+    public isEmpty() {
+        return undefined === this.shape;
+    }
+
+    public trim() {
+        if (this.isEmpty()) {
+            const parent = Tree.parent(this);
+            if (parent instanceof FourCircles) {
+                parent.trim();
+            }
+        }
+    }
+
+    public static createCircle = (level: number): Item => {
+        return new Item({
+            level: level,
+            shape: new Circle({
+                id: Guid.create().toString(),
+                color: getRandomColor(),
+            }),
+        });
+    };
+}
+export class FourCircles extends sb.objectRecursive('FourCircles', {
+    circle1: Item,
+    circle2: Item,
+    circle3: Item,
+    circle4: Item,
+    level: sb.number,
+}) {
+    public static createFourCircles = (level: number): FourCircles => {
+        return new FourCircles({
+            circle1: Item.createCircle(level),
+            circle2: Item.createCircle(level),
+            circle3: Item.createCircle(level),
+            circle4: Item.createCircle(level),
+            level: level,
+        });
+    };
+
+    public hydrate() {
+        this.circle1 = Item.createCircle(this.level);
+        this.circle2 = Item.createCircle(this.level);
+        this.circle3 = Item.createCircle(this.level);
+        this.circle4 = Item.createCircle(this.level);
+    }
+
+    public trim() {
+        if (this.isEmpty()) {
+            const parent = Tree.parent(this);
+            if (parent instanceof Item) {                
+                parent.shape = undefined;
+                parent.trim();                
+            }
+        }
+    }
+
+    private isEmpty() {
+        if (
+            this.circle1.isEmpty() &&
+            this.circle2.isEmpty() &&
+            this.circle3.isEmpty() &&
+            this.circle4.isEmpty()
+        )
+            return true;
+        return false;
+    }
+}
 
 export const getRandomColor = (): string => {
     const color = colorMap.get(getRandomInt(5));
@@ -40,9 +118,11 @@ export const getRandomColor = (): string => {
         return 'Black';
     }
 };
+
 const getRandomInt = (max: number): number => {
     return Math.floor(Math.random() * max);
 };
+
 export const colorMap = new Map<number, string>([
     [0, 'Red'],
     [1, 'Green'],
@@ -52,32 +132,21 @@ export const colorMap = new Map<number, string>([
 ]);
 
 {
-	// Due to limitations of TypeScript, recursive schema may not produce type errors when declared incorrectly.
-	// Using ValidateRecursiveSchema helps ensure that mistakes made in the definition of a recursive schema (like `Items`)
-	// will introduce a compile error.
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	type _check = ValidateRecursiveSchema<typeof FourCircles>;
+    // Due to limitations of TypeScript, recursive schema may not produce type errors when declared incorrectly.
+    // Using ValidateRecursiveSchema helps ensure that mistakes made in the definition of a recursive schema (like `Items`)
+    // will introduce a compile error.
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    type _check = ValidateRecursiveSchema<typeof FourCircles>;
 }
 
 export const treeConfiguration = new TreeConfiguration(
-    FourCircles,
-    () => new FourCircles({
-        circle1: new Circle({
-            id: Guid.create().toString(),
-            color: getRandomColor(),            
-        }),
-        circle2: new Circle({
-            id: Guid.create().toString(),
-            color: getRandomColor(),            
-        }),
-        circle3: new Circle({
-            id: Guid.create().toString(),
-            color: getRandomColor(),            
-        }),
-        circle4: new Circle({
-            id: Guid.create().toString(),
-            color: getRandomColor(),            
-        }),
-        level: 1,
-    })    
+    Item,
+    () =>
+        new Item({
+            level: 0,
+            shape: new Circle({
+                id: Guid.create().toString(),
+                color: getRandomColor(),
+            }),
+        })
 );

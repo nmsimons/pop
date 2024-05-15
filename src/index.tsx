@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import { FourCircles, treeConfiguration } from './schema';
+import { Item, treeConfiguration } from './schema';
 
 import React from 'react';
 import { createRoot } from 'react-dom/client';
@@ -24,7 +24,7 @@ async function main() {
     const { container } = await loadFluidData(containerId, containerSchema);
 
     // Initialize the SharedTree Data Structure
-    const appData: TreeView<typeof FourCircles> = (container.initialObjects.appData as ITree).schematize(
+    const appData: TreeView<typeof Item> = (container.initialObjects.appData as ITree).schematize(
         treeConfiguration
     );    
 
