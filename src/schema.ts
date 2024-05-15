@@ -98,6 +98,10 @@ export class FourCircles extends sb.objectRecursive('FourCircles', {
         }
     }
 
+    // if two or more circles are removed concurrently, this test will fail
+    // because it will return false in both clients and won't run again
+    // this is mitigated by code that manually removes empty circles but
+    // is a limitation of SharedTree currently
     private isEmpty() {
         if (
             this.circle1.isEmpty() &&
