@@ -21,7 +21,7 @@ async function main() {
     let containerId = location.hash.substring(1);
 
     // Initialize Fluid Container
-    const { container } = await loadFluidData(containerId, containerSchema);
+    const { container, services } = await loadFluidData(containerId, containerSchema);
 
     // Initialize the SharedTree Data Structure
     const appData: TreeView<typeof Item> = (container.initialObjects.appData as ITree).schematize(
@@ -31,7 +31,7 @@ async function main() {
     // Render the app - note we attach new containers after render so
     // the app renders instantly on create new flow. The app will be
     // interactive immediately.
-    root.render(<ReactApp data={appData} container={container} />);
+    root.render(<ReactApp data={appData} container={container} services={services} />);
 
     // If the app is in a `createNew` state - no containerId, and the container is detached, we attach the container.
     // This uploads the container to the service and connects to the collaboration session.

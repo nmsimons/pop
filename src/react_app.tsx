@@ -1,17 +1,57 @@
 import React, { useEffect, useState } from 'react';
 import { TreeView } from '@fluidframework/tree';
 import { Circle, FourCircles, Item } from './schema';
-import { IFluidContainer } from 'fluid-framework';
+import { ConnectionState, IFluidContainer } from 'fluid-framework';
 import { Tree } from '@fluidframework/tree';
 import { circleSizeMap } from './utils';
 import useSound from 'use-sound';
 import pop from './pop.mp3';
+import { AzureContainerServices } from '@fluidframework/azure-client';
 
 export function ReactApp(props: {
     data: TreeView<typeof Item>;
     container: IFluidContainer;
+    services: AzureContainerServices
 }): JSX.Element {
     const [invalidations, setInvalidations] = useState(0);
+    const [users, setUsers] = useState(props.services.audience.getMembers().size);
+    const [connectionState, setConnectionState] = useState("");
+    const [savedState, setSavedState] = useState(!props.container.isDirty);
+
+    useEffect(() => {
+        const audience = props.services.audience;
+        const handleAudienceChange = () => {
+            setUsers(audience.getMembers().size);
+        };
+        audience.on('membersChanged', handleAudienceChange);
+        return () => {
+            audience.off('membersChanged', handleAudienceChange);
+        };
+    }, []);
+
+    useEffect(() => {        
+        props.container.on('connected', () => updateConnectionState());
+        props.container.on('disconnected', () => updateConnectionState());                      
+    }, []);
+
+    // Save the state of the app when the container is saved
+    useEffect(() => {        
+        props.container.on('saved', () => setSavedState(!props.container.isDirty));
+        props.container.on('dirty', () => setSavedState(!props.container.isDirty));        
+    }, []);
+
+    const updateConnectionState = () => {
+        if (props.container.connectionState === ConnectionState.Connected) {
+            setConnectionState("connected");
+        } else if (props.container.connectionState === ConnectionState.Disconnected) {
+            setConnectionState("disconnected");
+        } else if (props.container.connectionState === ConnectionState.EstablishingConnection) {
+            setConnectionState("connecting");
+        } else if (props.container.connectionState === ConnectionState.CatchingUp) {
+            setConnectionState("catching up");
+        }
+    };
+
 
     // Register for tree deltas when the component mounts.
     // Any time the tree changes, the app will update
@@ -32,6 +72,9 @@ export function ReactApp(props: {
             </div>
             <Explanation />
             <AgainAgain root={props.data.root} />
+            <div className="text-lg">Users: {users} </div>
+            <div className='text-lg'>Connection State: {connectionState} </div>
+            <div className='text-lg'>Saved: {savedState.toString()} </div> 
             <div className="h-16" />
         </div>
     );
@@ -87,7 +130,7 @@ export function CircleView(props: { circle: Circle }): JSX.Element {
     };
 
     const size =
-        props.circle.level === Item._MaxLevel + 1
+        props.circle.level === Item.MaxLevel + 1
             ? circleSizeMap.get(props.circle.level) + ' invisible'
             : circleSizeMap.get(props.circle.level);
 
@@ -153,7 +196,7 @@ export function Explanation(): JSX.Element {
     );
 }
 
-export function AgainAgain(props: { root: FourCircles | Item }): JSX.Element {
+export function AgainAgain(props: { root: Item }): JSX.Element {
     return (
         <div
             className="transition-all text-lg hover:scale-125"

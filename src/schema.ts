@@ -6,18 +6,18 @@ import {
 } from '@fluidframework/tree';
 import { Guid } from 'guid-typescript';
 
-const sb = new SchemaFactory('6404be1d-5e53-43f3-ac45-113c96a7c31b');
+const sf = new SchemaFactory('6404be1d-5e53-43f3-ac45-113c96a7c31b');
 
-export class Circle extends sb.object('Circle', {
-    id: sb.string,
-    color: sb.string,    
+export class Circle extends sf.object('Circle', {
+    id: sf.string,
+    color: sf.string,    
 }) {
     public pop() {
         const parent = Tree.parent(this);
         if (Tree.is(parent, Item)) parent.pop();
     }
 
-    public get level() {
+    public get level(): number {
         const parent = Tree.parent(this);
         if (Tree.is(parent, Item))
             return parent.level
@@ -25,11 +25,11 @@ export class Circle extends sb.object('Circle', {
     }
 }
 
-export class Item extends sb.objectRecursive('Item', {
-    shape: sb.optionalRecursive([Circle, () => FourCircles]),
-    level: sb.number,
+export class Item extends sf.objectRecursive('Item', {
+    shape: sf.optionalRecursive([Circle, () => FourCircles]),
+    level: sf.number,
 }) {
-    public static _MaxLevel = 4;
+    public static MaxLevel = 4;
 
     public hydrate() {
         this.shape = new Circle({
@@ -39,25 +39,20 @@ export class Item extends sb.objectRecursive('Item', {
     }
 
     public pop() {
-        if (Item._MaxLevel === this.level) {
+        if (Item.MaxLevel === this.level) {
             this.shape = undefined;
             this.trim();
         } else {
-            this.shape = new FourCircles({
-                circle1: createCircle(this.level + 1),
-                circle2: createCircle(this.level + 1),
-                circle3: createCircle(this.level + 1),
-                circle4: createCircle(this.level + 1),                
-            });
+            this.shape = createFourCircles(this.level + 1);
         }
     }
 
-    public isEmpty() {
+    public get isEmpty() {
         return undefined === this.shape;
     }
 
     public trim() {
-        if (this.isEmpty()) {
+        if (this.isEmpty) {
             const parent = Tree.parent(this);
             if (parent instanceof FourCircles) {
                 parent.trim();
@@ -66,18 +61,12 @@ export class Item extends sb.objectRecursive('Item', {
     }
 }
 
-export class FourCircles extends sb.objectRecursive('FourCircles', {
+export class FourCircles extends sf.object('FourCircles', {
     circle1: Item,
     circle2: Item,
     circle3: Item,
     circle4: Item,    
-}) {   
-    public hydrate() {
-        this.circle1 = createCircle(this.level);
-        this.circle2 = createCircle(this.level);
-        this.circle3 = createCircle(this.level);
-        this.circle4 = createCircle(this.level);
-    }
+}) {
 
     public trim() {
         if (this.isEmpty()) {
@@ -95,10 +84,10 @@ export class FourCircles extends sb.objectRecursive('FourCircles', {
     // is a limitation of SharedTree currently
     private isEmpty() {
         if (
-            this.circle1.isEmpty() &&
-            this.circle2.isEmpty() &&
-            this.circle3.isEmpty() &&
-            this.circle4.isEmpty()
+            this.circle1.isEmpty &&
+            this.circle2.isEmpty &&
+            this.circle3.isEmpty &&
+            this.circle4.isEmpty
         )
             return true;
         return false;
@@ -133,6 +122,15 @@ const colorMap = new Map<number, string>([
     [4, 'Purple'],
 ]);
 
+const createFourCircles = (level: number): FourCircles => {
+    return new FourCircles({
+        circle1: createCircle(level),
+        circle2: createCircle(level),
+        circle3: createCircle(level),
+        circle4: createCircle(level),        
+    });
+}
+
 const createCircle = (level: number): Item => {
     return new Item({            
         level: level,
@@ -148,7 +146,7 @@ const createCircle = (level: number): Item => {
     // Using ValidateRecursiveSchema helps ensure that mistakes made in the definition of a recursive schema (like `Items`)
     // will introduce a compile error.
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type _check = ValidateRecursiveSchema<typeof FourCircles>;
+    type _check = ValidateRecursiveSchema<typeof Item>;
 }
 
 export const treeConfiguration = new TreeConfiguration(
