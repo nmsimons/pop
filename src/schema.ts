@@ -10,8 +10,20 @@ const sb = new SchemaFactory('6404be1d-5e53-43f3-ac45-113c96a7c31b');
 
 export class Circle extends sb.object('Circle', {
     id: sb.string,
-    color: sb.string,
-}) {}
+    color: sb.string,    
+}) {
+    public pop() {
+        const parent = Tree.parent(this);
+        if (Tree.is(parent, Item)) parent.pop();
+    }
+
+    public get level() {
+        const parent = Tree.parent(this);
+        if (Tree.is(parent, Item))
+            return parent.level
+        else return 0;
+    }
+}
 
 export class Item extends sb.objectRecursive('Item', {
     shape: sb.optionalRecursive([Circle, () => FourCircles]),
@@ -22,7 +34,7 @@ export class Item extends sb.objectRecursive('Item', {
     public hydrate() {
         this.shape = new Circle({
             id: Guid.create().toString(),
-            color: getRandomColor(),
+            color: getRandomColor(),            
         });
     }
 
@@ -32,11 +44,10 @@ export class Item extends sb.objectRecursive('Item', {
             this.trim();
         } else {
             this.shape = new FourCircles({
-                circle1: Item.createCircle(this.level + 1),
-                circle2: Item.createCircle(this.level + 1),
-                circle3: Item.createCircle(this.level + 1),
-                circle4: Item.createCircle(this.level + 1),
-                level: this.level + 1,
+                circle1: createCircle(this.level + 1),
+                circle2: createCircle(this.level + 1),
+                circle3: createCircle(this.level + 1),
+                circle4: createCircle(this.level + 1),                
             });
         }
     }
@@ -53,39 +64,19 @@ export class Item extends sb.objectRecursive('Item', {
             }
         }
     }
-
-    public static createCircle = (level: number): Item => {
-        return new Item({
-            level: level,
-            shape: new Circle({
-                id: Guid.create().toString(),
-                color: getRandomColor(),
-            }),
-        });
-    };
 }
+
 export class FourCircles extends sb.objectRecursive('FourCircles', {
     circle1: Item,
     circle2: Item,
     circle3: Item,
-    circle4: Item,
-    level: sb.number,
-}) {
-    public static createFourCircles = (level: number): FourCircles => {
-        return new FourCircles({
-            circle1: Item.createCircle(level),
-            circle2: Item.createCircle(level),
-            circle3: Item.createCircle(level),
-            circle4: Item.createCircle(level),
-            level: level,
-        });
-    };
-
+    circle4: Item,    
+}) {   
     public hydrate() {
-        this.circle1 = Item.createCircle(this.level);
-        this.circle2 = Item.createCircle(this.level);
-        this.circle3 = Item.createCircle(this.level);
-        this.circle4 = Item.createCircle(this.level);
+        this.circle1 = createCircle(this.level);
+        this.circle2 = createCircle(this.level);
+        this.circle3 = createCircle(this.level);
+        this.circle4 = createCircle(this.level);
     }
 
     public trim() {
@@ -112,9 +103,16 @@ export class FourCircles extends sb.objectRecursive('FourCircles', {
             return true;
         return false;
     }
+
+    public get level(): number {
+        const parent = Tree.parent(this);
+        if (Tree.is(parent, Item))
+            return parent.level + 1
+        else return 0;
+    }
 }
 
-export const getRandomColor = (): string => {
+const getRandomColor = (): string => {
     const color = colorMap.get(getRandomInt(5));
     if (typeof color === 'string') {
         return color;
@@ -127,13 +125,23 @@ const getRandomInt = (max: number): number => {
     return Math.floor(Math.random() * max);
 };
 
-export const colorMap = new Map<number, string>([
+const colorMap = new Map<number, string>([
     [0, 'Red'],
     [1, 'Green'],
     [2, 'Blue'],
     [3, 'Orange'],
     [4, 'Purple'],
 ]);
+
+const createCircle = (level: number): Item => {
+    return new Item({            
+        level: level,
+        shape: new Circle({
+            id: Guid.create().toString(),
+            color: getRandomColor(),                
+        }),
+    });
+}    
 
 {
     // Due to limitations of TypeScript, recursive schema may not produce type errors when declared incorrectly.
@@ -148,7 +156,7 @@ export const treeConfiguration = new TreeConfiguration(
     () =>
         new Item({
             level: 0,
-            shape: new Circle({
+            shape: new Circle({               
                 id: Guid.create().toString(),
                 color: getRandomColor(),
             }),

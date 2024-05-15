@@ -28,7 +28,7 @@ export function ReactApp(props: {
     return (
         <div className={classes}>
             <div className="scale-75 md:scale-100">
-                <CirclesLayerView i={props.data.root} parent={undefined} />
+                <CirclesLayerView i={props.data.root} />
             </div>
             <Explanation />
             <AgainAgain root={props.data.root} />
@@ -41,25 +41,22 @@ export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
     return (
         <div className="flex flex-col">
             <div className="flex flex-row">
-                <CirclesLayerView i={props.fc.circle1} parent={props.fc} />
-                <CirclesLayerView i={props.fc.circle2} parent={props.fc} />
+                <CirclesLayerView i={props.fc.circle1} />
+                <CirclesLayerView i={props.fc.circle2} />
             </div>
             <div className="flex flex-row">
-                <CirclesLayerView i={props.fc.circle3} parent={props.fc} />
-                <CirclesLayerView i={props.fc.circle4} parent={props.fc} />
+                <CirclesLayerView i={props.fc.circle3} />
+                <CirclesLayerView i={props.fc.circle4} />
             </div>
         </div>
     );
 }
 
-export function CirclesLayerView(props: {
-    i: Item;
-    parent: FourCircles | undefined;
-}): JSX.Element {
+export function CirclesLayerView(props: { i: Item }): JSX.Element {
     if (props.i.shape === undefined) {
         return <Popped i={props.i} />;
     } else if (props.i.shape instanceof Circle) {
-        return <CircleView item={props.i} />;
+        return <CircleView circle={props.i.shape} />;
     } else if (props.i.shape instanceof FourCircles) {
         return <FourCirclesView fc={props.i.shape} />;
     } else {
@@ -67,52 +64,48 @@ export function CirclesLayerView(props: {
     }
 }
 
-export function CircleView(props: { item: Item }): JSX.Element {
+export function CircleView(props: { circle: Circle }): JSX.Element {
     const [mounted, setMounted] = useState(false);
     const [playPop] = useSound(pop, { volume: 0.1 });
 
-    if (Tree.is(props.item.shape, Circle)) {
-        useEffect(() => {
-            setMounted(true);
-        }, []);
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
-        const handleClick = (e: React.MouseEvent) => {
-            if (e.button === 0) {
-                playPop();
-                props.item.pop();
+    const handleClick = (e: React.MouseEvent) => {
+        if (e.button === 0) {
+            playPop();
+            props.circle.pop();
+        }
+    };
+
+    const handleMouseEnter = (e: React.MouseEvent) => {
+        if (e.buttons > 0) {
+            playPop();
+            props.circle.pop();
+        }
+    };
+
+    const size =
+        props.circle.level === Item._MaxLevel + 1
+            ? circleSizeMap.get(props.circle.level) + ' invisible'
+            : circleSizeMap.get(props.circle.level);
+
+    const color = { background: props.circle.color };
+
+    return (
+        <div
+            key={props.circle.id}
+            style={color}
+            className={
+                'transition-all ease-in-out duration-100 border-0 rounded-full hover:scale-100 shadow-md ' +
+                size +
+                (mounted ? ' scale-95' : ' scale-90')
             }
-        };
-
-        const handleMouseEnter = (e: React.MouseEvent) => {
-            if (e.buttons > 0) {
-                playPop();
-                props.item.pop();
-            }
-        };
-
-        const size =
-            props.item.level === Item._MaxLevel + 1
-                ? circleSizeMap.get(props.item.level) + ' invisible'
-                : circleSizeMap.get(props.item.level);
-
-        const color = { background: props.item.shape.color };
-
-        return (
-            <div
-                key={props.item.shape.id}
-                style={color}
-                className={
-                    'transition-all ease-in-out duration-100 border-0 rounded-full hover:scale-100 shadow-md ' +
-                    size +
-                    (mounted ? ' scale-95' : ' scale-90')
-                }
-                onMouseEnter={(e) => handleMouseEnter(e)}
-                onClick={(e) => handleClick(e)}
-            ></div>
-        );
-    } else {
-        return <></>;
-    }
+            onMouseEnter={(e) => handleMouseEnter(e)}
+            onClick={(e) => handleClick(e)}
+        ></div>
+    );
 }
 
 export function Popped(props: { i: Item }): JSX.Element {
