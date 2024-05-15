@@ -2,6 +2,7 @@ import {
     SchemaFactory,
     Tree,
     TreeConfiguration,
+    TreeNode,
     ValidateRecursiveSchema,    
 } from '@fluidframework/tree';
 import { Guid } from 'guid-typescript';
@@ -26,8 +27,7 @@ export class Circle extends sf.object('Circle', {
 }
 
 export class Item extends sf.objectRecursive('Item', {
-    shape: sf.optionalRecursive([Circle, () => FourCircles]),
-    level: sf.number,
+    shape: sf.optionalRecursive([Circle, () => FourCircles]),    
 }) {
     public static MaxLevel = 4;
 
@@ -43,7 +43,7 @@ export class Item extends sf.objectRecursive('Item', {
             this.shape = undefined;
             this.trim();
         } else {
-            this.shape = createFourCircles(this.level + 1);
+            this.shape = createFourCircles();
         }
     }
 
@@ -58,6 +58,21 @@ export class Item extends sf.objectRecursive('Item', {
                 parent.trim();
             }
         }
+    }
+
+    private static goUp = (item: TreeNode, level: number): number => {
+        const parent = Tree.parent(item);
+        if (parent === undefined) {
+            return level;
+        } else if (parent instanceof Item) {
+            return this.goUp(parent, level + 1);
+        } else {
+            return this.goUp(parent, level);
+        }
+    }
+
+    public get level(): number {
+        return Item.goUp(this, 0);
     }
 }
 
@@ -122,18 +137,17 @@ const colorMap = new Map<number, string>([
     [4, 'Purple'],
 ]);
 
-const createFourCircles = (level: number): FourCircles => {
+const createFourCircles = (): FourCircles => {
     return new FourCircles({
-        circle1: createCircleItem(level),
-        circle2: createCircleItem(level),
-        circle3: createCircleItem(level),
-        circle4: createCircleItem(level),        
+        circle1: createCircleItem(),
+        circle2: createCircleItem(),
+        circle3: createCircleItem(),
+        circle4: createCircleItem(),        
     });
 }
 
-const createCircleItem = (level: number): Item => {
-    return new Item({            
-        level: level,
+const createCircleItem = (): Item => {
+    return new Item({
         shape: new Circle({
             id: Guid.create().toString(),
             color: getRandomColor(),                
@@ -151,5 +165,5 @@ const createCircleItem = (level: number): Item => {
 
 export const treeConfiguration = new TreeConfiguration(
     Item,
-    () => createCircleItem(0),
+    () => createCircleItem(),
 );
