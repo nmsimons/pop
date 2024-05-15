@@ -59,20 +59,14 @@ export class Item extends sf.objectRecursive('Item', {
             }
         }
     }
-
-    private static goUp = (item: TreeNode, level: number): number => {
-        const parent = Tree.parent(item);
-        if (parent === undefined) {
-            return level;
-        } else if (parent instanceof Item) {
-            return this.goUp(parent, level + 1);
-        } else {
-            return this.goUp(parent, level);
-        }
-    }
-
+        
     public get level(): number {
-        return Item.goUp(this, 0);
+        const parent = Tree.parent(this);
+        if (Tree.is(parent, Item))
+            return parent.level + 1
+        else if (Tree.is(parent, FourCircles))
+            return parent.level;
+        else return 0;
     }
 }
 
