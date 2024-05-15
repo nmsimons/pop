@@ -124,14 +124,14 @@ const colorMap = new Map<number, string>([
 
 const createFourCircles = (level: number): FourCircles => {
     return new FourCircles({
-        circle1: createCircle(level),
-        circle2: createCircle(level),
-        circle3: createCircle(level),
-        circle4: createCircle(level),        
+        circle1: createCircleItem(level),
+        circle2: createCircleItem(level),
+        circle3: createCircleItem(level),
+        circle4: createCircleItem(level),        
     });
 }
 
-const createCircle = (level: number): Item => {
+const createCircleItem = (level: number): Item => {
     return new Item({            
         level: level,
         shape: new Circle({
@@ -151,12 +151,5 @@ const createCircle = (level: number): Item => {
 
 export const treeConfiguration = new TreeConfiguration(
     Item,
-    () =>
-        new Item({
-            level: 0,
-            shape: new Circle({               
-                id: Guid.create().toString(),
-                color: getRandomColor(),
-            }),
-        })
+    () => createCircleItem(0),
 );
