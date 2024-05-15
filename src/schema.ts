@@ -1,8 +1,7 @@
 import {
     SchemaFactory,
     Tree,
-    TreeConfiguration,
-    TreeNode,
+    TreeConfiguration,    
     ValidateRecursiveSchema,    
 } from '@fluidframework/tree';
 import { Guid } from 'guid-typescript';
