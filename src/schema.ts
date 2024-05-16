@@ -4,15 +4,21 @@ import {
     TreeConfiguration,    
     ValidateRecursiveSchema,    
 } from '@fluidframework/tree';
-import { Guid } from 'guid-typescript';
 
 const sf = new SchemaFactory('6404be1d-5e53-43f3-ac45-113c96a7c31b');
 
+let _counter = 0;
+
 export class Circle extends sf.object('Circle', {
-    id: sf.string,
     color: sf.string,    
 }) {
+
+    public readonly id = _counter++;
+
     public pop() {
+        console.log('pop1', this.id);
+        console.log('pop2', this.id);
+        console.log('pop3', this.id);
         const parent = Tree.parent(this);
         if (Tree.is(parent, Item)) parent.pop();
     }
@@ -22,7 +28,7 @@ export class Circle extends sf.object('Circle', {
         if (Tree.is(parent, Item))
             return parent.level
         else return 0;
-    }
+    }    
 }
 
 export class Item extends sf.objectRecursive('Item', {
@@ -31,8 +37,11 @@ export class Item extends sf.objectRecursive('Item', {
     public static MaxLevel = 4;
 
     public hydrate() {
-        this.shape = new Circle({
-            id: Guid.create().toString(),
+        // Reset the counter when the tree is hydrated
+        if (this.level === 0) {
+            _counter = 0;
+        }
+        this.shape = new Circle({            
             color: getRandomColor(),            
         });
     }
@@ -139,8 +148,7 @@ const createFourCircles = (): FourCircles => {
 
 const createCircleItem = (): Item => {
     return new Item({
-        shape: new Circle({
-            id: Guid.create().toString(),
+        shape: new Circle({            
             color: getRandomColor(),                
         }),
     });
