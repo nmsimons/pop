@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { TreeView } from '@fluidframework/tree';
-import { Circle, FourCircles, Item } from './schema';
+import { FourCircles, Item } from './schema';
 import { ConnectionState, IFluidContainer } from 'fluid-framework';
 import { Tree } from '@fluidframework/tree';
 import { circleSizeMap } from './utils';
@@ -103,16 +103,16 @@ export function CirclesLayerView(props: { i: Item }): JSX.Element {
 
     if (props.i.shape === undefined) {
         return <Popped i={props.i} />;
-    } else if (props.i.shape instanceof Circle) {
-        return <CircleView circle={props.i.shape} />;
     } else if (props.i.shape instanceof FourCircles) {
-        return <FourCirclesView fc={props.i.shape} />;
+        return <FourCirclesView fc={props.i.shape} />;        
+    } else if (props.i.shape) {
+        return <CircleView circle={props.i} />;
     } else {
         return <Popped i={props.i} />;
     }
 }
 
-export function CircleView(props: { circle: Circle }): JSX.Element {
+export function CircleView(props: { circle: Item }): JSX.Element {
     const [mounted, setMounted] = useState(false);
     const [playPop] = useSound(pop, { volume: 0.1 });
 

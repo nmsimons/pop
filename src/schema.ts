@@ -1,46 +1,29 @@
 import {
     SchemaFactory,
     Tree,
-    TreeConfiguration,    
-    ValidateRecursiveSchema,    
+    TreeConfiguration,
+    ValidateRecursiveSchema,
 } from '@fluidframework/tree';
 
 const sf = new SchemaFactory('6404be1d-5e53-43f3-ac45-113c96a7c31b');
 
 let _counter = 0;
 
-export class Circle extends sf.object('Circle', {
-    color: sf.string,    
-}) {
-
-    public readonly id = _counter++;
-
-    public pop() {        
-        const parent = Tree.parent(this);
-        if (Tree.is(parent, Item)) parent.pop();
-    }
-
-    public get level(): number {
-        const parent = Tree.parent(this);
-        if (Tree.is(parent, Item))
-            return parent.level
-        else return 0;
-    }    
-}
-
 export class Item extends sf.objectRecursive('Item', {
-    shape: sf.optionalRecursive([Circle, () => FourCircles]),    
+    shape: sf.optionalRecursive([sf.boolean, () => FourCircles]),    
+    color: sf.string,
 }) {
     public static MaxLevel = 4;
+
+    public readonly id = _counter++;
 
     public hydrate() {
         // Reset the counter when the tree is hydrated
         if (this.level === 0) {
             _counter = 0;
         }
-        this.shape = new Circle({            
-            color: getRandomColor(),            
-        });
+        this.shape = true;
+        this.color = getRandomColor();
     }
 
     public pop() {
@@ -50,6 +33,13 @@ export class Item extends sf.objectRecursive('Item', {
         } else {
             this.shape = createFourCircles();
         }
+    }
+
+    public get level(): number {
+        const parent = Tree.parent(this);
+        if (Tree.is(parent, FourCircles))
+            return parent.level;
+        else return 0;
     }
 
     public get isEmpty() {
@@ -64,28 +54,20 @@ export class Item extends sf.objectRecursive('Item', {
             }
         }
     }
-
-    public get level(): number {
-        const parent = Tree.parent(this);
-        if (Tree.is(parent, FourCircles))
-            return parent.level;
-        else return 0;
-    }
 }
 
 export class FourCircles extends sf.object('FourCircles', {
     circle1: Item,
     circle2: Item,
     circle3: Item,
-    circle4: Item,    
+    circle4: Item,
 }) {
-
     public trim() {
         if (this.isEmpty()) {
             const parent = Tree.parent(this);
-            if (parent instanceof Item) {                
+            if (parent instanceof Item) {
                 parent.shape = undefined;
-                parent.trim();                
+                parent.trim();
             }
         }
     }
@@ -107,8 +89,7 @@ export class FourCircles extends sf.object('FourCircles', {
 
     public get level(): number {
         const parent = Tree.parent(this);
-        if (Tree.is(parent, Item))
-            return parent.level + 1
+        if (Tree.is(parent, Item)) return parent.level + 1;
         else return 0;
     }
 }
@@ -139,17 +120,16 @@ const createFourCircles = (): FourCircles => {
         circle1: createCircleItem(),
         circle2: createCircleItem(),
         circle3: createCircleItem(),
-        circle4: createCircleItem(),        
+        circle4: createCircleItem(),
     });
-}
+};
 
 const createCircleItem = (): Item => {
-    return new Item({
-        shape: new Circle({            
-            color: getRandomColor(),                
-        }),
+    return new Item({        
+        shape: true,
+        color: getRandomColor(),
     });
-}    
+};
 
 {
     // Due to limitations of TypeScript, recursive schema may not produce type errors when declared incorrectly.
@@ -159,7 +139,6 @@ const createCircleItem = (): Item => {
     type _check = ValidateRecursiveSchema<typeof Item>;
 }
 
-export const treeConfiguration = new TreeConfiguration(
-    Item,
-    () => createCircleItem(),
+export const treeConfiguration = new TreeConfiguration(Item, () =>
+    createCircleItem()
 );
