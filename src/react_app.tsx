@@ -13,7 +13,28 @@ export function ReactApp(props: {
     container: IFluidContainer;
     services: AzureContainerServices
 }): JSX.Element {
-    
+    const classes =
+        'flex flex-col gap-3 items-center justify-center mt-6 content-center select-none relative w-full';
+
+    return (
+        <div className={classes}>
+            <div className="scale-75 md:scale-100">
+                <CirclesLayerView i={props.data.root} />
+            </div>
+            <Explanation />
+            <AgainAgain root={props.data.root} />
+            <ConnectionStatus {...props} /> 
+            <div className="h-16" />
+        </div>
+    );
+}
+
+// React component that shows the state of the Fluid container and
+// the number of users in the session
+export function ConnectionStatus(props: {
+    container: IFluidContainer;
+    services: AzureContainerServices;
+}): JSX.Element {
     const [users, setUsers] = useState(props.services.audience.getMembers().size);
     const [connectionState, setConnectionState] = useState("");
     const [savedState, setSavedState] = useState(!props.container.isDirty);
@@ -51,30 +72,19 @@ export function ReactApp(props: {
             setConnectionState("catching up");
         }
     };
-    
-    
-
-    const classes =
-        'flex flex-col gap-3 items-center justify-center mt-6 content-center select-none relative w-full';
 
     return (
-        <div className={classes}>
-            <div className="scale-75 md:scale-100">
-                <CirclesLayerView i={props.data.root} />
-            </div>
-            <Explanation />
-            <AgainAgain root={props.data.root} />
-            <div className="text-lg">Users: {users} </div>
-            <div className='text-lg'>Connection State: {connectionState} </div>
-            <div className='text-lg'>Saved: {savedState.toString()} </div> 
-            <div className="h-16" />
+        <div className="text-lg">
+            Users: {users} <br />
+            Connection State: {connectionState} <br />
+            Saved: {savedState.toString()} <br />
         </div>
     );
 }
 
-export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
-    
 
+
+export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
     return (
         <div className="flex flex-col">
             <div className="flex flex-row">
