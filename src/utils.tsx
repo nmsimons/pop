@@ -8,4 +8,5 @@ export const circleSizeMap = new Map<number, string>([
     [4, 'w-8 h-8'],
     [5, 'w-4 h-4'],
     [6, 'w-2 h-2'],
+    [7, 'w-1 h-1'],
 ]);

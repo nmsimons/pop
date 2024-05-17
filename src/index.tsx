@@ -7,6 +7,10 @@ import { loadFluidData, containerSchema } from './infra/fluid';
 import { ITree, TreeView } from '@fluidframework/tree';
 import './output.css';
 import { ReactApp } from './react_app';
+import { _defaultMaxLevel } from './schema';
+
+export let maxLevel = _defaultMaxLevel;
+const maxMaxLevel = 7;
 
 async function main() {
     // create the root element for React
@@ -22,6 +26,14 @@ async function main() {
 
     // Initialize Fluid Container
     const { container, services } = await loadFluidData(containerId, containerSchema);
+
+    const queryParams = location.search.substring(1);
+    const usp = new URLSearchParams(queryParams);
+
+    // Get the maxLevel from the URL and convert it to a number
+    const max = parseInt(usp.get('maxLevel') as string)
+    if (!isNaN(max)) maxLevel = parseInt(usp.get('maxLevel') as string);
+    if (maxLevel > maxMaxLevel) maxLevel = maxMaxLevel;    
 
     // Initialize the SharedTree Data Structure
     const appData: TreeView<typeof Item> = (container.initialObjects.appData as ITree).schematize(

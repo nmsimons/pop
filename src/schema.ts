@@ -4,17 +4,19 @@ import {
     TreeConfiguration,
     ValidateRecursiveSchema,
 } from '@fluidframework/tree';
+import { maxLevel } from '.';
 
 const sf = new SchemaFactory('6404be1d-5e53-43f3-ac45-113c96a7c31b');
 
 let _counter = 0;
 
+export const _defaultMaxLevel = 4;
+
 export class Item extends sf.objectRecursive('Item', {
     shape: sf.optionalRecursive([sf.boolean, () => FourCircles]),    
     color: sf.string,
+    maxLevel: sf.number,
 }) {
-    public static MaxLevel = 4;
-
     public readonly id = _counter++;
 
     public hydrate() {
@@ -27,7 +29,7 @@ export class Item extends sf.objectRecursive('Item', {
     }
 
     public pop() {
-        if (Item.MaxLevel === this.level) {
+        if (this.maxLevel === this.level) {
             this.shape = undefined;
             this.trim();
         } else {
@@ -125,7 +127,8 @@ const createFourCircles = (): FourCircles => {
 };
 
 const createCircleItem = (): Item => {
-    return new Item({        
+    return new Item({
+        maxLevel: maxLevel,        
         shape: true,
         color: getRandomColor(),
     });

@@ -135,7 +135,7 @@ export function CircleView(props: { circle: Item }): JSX.Element {
     };
 
     const size =
-        props.circle.level === Item.MaxLevel + 1
+        props.circle.level === props.circle.maxLevel + 1
             ? circleSizeMap.get(props.circle.level) + ' invisible'
             : circleSizeMap.get(props.circle.level);
 
