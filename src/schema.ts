@@ -15,10 +15,7 @@ export class Circle extends sf.object('Circle', {
 
     public readonly id = _counter++;
 
-    public pop() {
-        console.log('pop1', this.id);
-        console.log('pop2', this.id);
-        console.log('pop3', this.id);
+    public pop() {        
         const parent = Tree.parent(this);
         if (Tree.is(parent, Item)) parent.pop();
     }

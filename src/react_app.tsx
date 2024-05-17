@@ -13,7 +13,7 @@ export function ReactApp(props: {
     container: IFluidContainer;
     services: AzureContainerServices
 }): JSX.Element {
-    const [invalidations, setInvalidations] = useState(0);
+    
     const [users, setUsers] = useState(props.services.audience.getMembers().size);
     const [connectionState, setConnectionState] = useState("");
     const [savedState, setSavedState] = useState(!props.container.isDirty);
@@ -51,16 +51,8 @@ export function ReactApp(props: {
             setConnectionState("catching up");
         }
     };
-
-
-    // Register for tree deltas when the component mounts.
-    // Any time the tree changes, the app will update
-    useEffect(() => {
-        const unsubscribe = Tree.on(props.data.root, 'treeChanged', () => {
-            setInvalidations(invalidations + Math.random());
-        });
-        return unsubscribe;
-    }, []);
+    
+    
 
     const classes =
         'flex flex-col gap-3 items-center justify-center mt-6 content-center select-none relative w-full';
@@ -81,6 +73,8 @@ export function ReactApp(props: {
 }
 
 export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
+    
+
     return (
         <div className="flex flex-col">
             <div className="flex flex-row">
@@ -96,6 +90,17 @@ export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
 }
 
 export function CirclesLayerView(props: { i: Item }): JSX.Element {
+    const [invalidations, setInvalidations] = useState(0);
+
+    // Register for tree deltas when the component mounts.
+    // Any time the tree changes, the app will update
+    useEffect(() => {
+        const unsubscribe = Tree.on(props.i, 'nodeChanged', () => {
+            setInvalidations(invalidations + Math.random());
+        });
+        return unsubscribe;
+    }, []);
+
     if (props.i.shape === undefined) {
         return <Popped i={props.i} />;
     } else if (props.i.shape instanceof Circle) {
