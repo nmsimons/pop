@@ -1,14 +1,15 @@
 /* eslint-disable react/jsx-key */
-import { Item, Pop, treeConfiguration } from './schema';
+import { treeConfiguration } from './schema';
 
 import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { loadFluidData, containerSchema } from './infra/fluid';
-import { ITree, TreeView } from '@fluidframework/tree';
 import './output.css';
 import { ReactApp } from './react_app';
 import { _defaultMaxLevel } from './schema';
 import { AttachState } from 'fluid-framework';
+import { clientProps } from './infra/clientProps';
+import { AzureClient } from '@fluidframework/azure-client';
 
 export let maxLevel = -1;
 const maxMaxLevel = 7;
@@ -25,10 +26,13 @@ async function main() {
     // a new container.
     let containerId = location.hash.substring(1);
 
+    const client = new AzureClient(clientProps);
+
     // Initialize Fluid Container
     const { container, services } = await loadFluidData(
         containerId,
-        containerSchema
+        containerSchema,
+        client
     );
 
     // if the container is detached
@@ -47,9 +51,7 @@ async function main() {
     }
 
     // Initialize the SharedTree Data Structure
-    const appData: TreeView<typeof Pop> = (
-        container.initialObjects.appData as ITree
-    ).schematize(treeConfiguration);
+    const appData = container.initialObjects.appData.schematize(treeConfiguration);
 
     // If the maxLevel is not set and the container is not detached
     // Get the maxLevel from the Fluid Container

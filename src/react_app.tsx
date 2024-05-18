@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { FourCircles, Item } from './schema';
-import { ConnectionState, IFluidContainer } from 'fluid-framework';
-import { Tree } from '@fluidframework/tree';
+import { ConnectionState, IFluidContainer, Tree } from 'fluid-framework';
 import { circleSizeMap } from './utils';
 import { playPop } from './utils';
 import { AzureContainerServices } from '@fluidframework/azure-client';

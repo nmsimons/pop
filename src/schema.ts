@@ -3,7 +3,7 @@ import {
     Tree,
     TreeConfiguration,
     ValidateRecursiveSchema,
-} from '@fluidframework/tree';
+} from 'fluid-framework';
 import { maxLevel } from '.';
 
 const sf = new SchemaFactory('6404be1d-5e53-43f3-ac45-113c96a7c31b');
