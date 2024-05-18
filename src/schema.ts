@@ -14,8 +14,7 @@ export const _defaultMaxLevel = 4;
 
 export class Item extends sf.objectRecursive('Item', {
     shape: sf.optionalRecursive([sf.boolean, () => FourCircles]),    
-    color: sf.string,
-    maxLevel: sf.number,
+    color: sf.string,    
 }) {
     public readonly id = _counter++;
 
@@ -29,7 +28,7 @@ export class Item extends sf.objectRecursive('Item', {
     }
 
     public pop() {
-        if (this.maxLevel === this.level) {
+        if (maxLevel === this.level) {
             this.shape = undefined;
             this.trim();
         } else {
@@ -96,6 +95,11 @@ export class FourCircles extends sf.object('FourCircles', {
     }
 }
 
+export class Pop extends sf.object('Pop', {
+    item: Item,
+    maxLevel: sf.number,
+}) {}
+
 const getRandomColor = (): string => {
     const color = colorMap.get(getRandomInt(5));
     if (typeof color === 'string') {
@@ -127,8 +131,7 @@ const createFourCircles = (): FourCircles => {
 };
 
 const createCircleItem = (): Item => {
-    return new Item({
-        maxLevel: maxLevel,        
+    return new Item({              
         shape: true,
         color: getRandomColor(),
     });
@@ -142,6 +145,9 @@ const createCircleItem = (): Item => {
     type _check = ValidateRecursiveSchema<typeof Item>;
 }
 
-export const treeConfiguration = new TreeConfiguration(Item, () =>
-    createCircleItem()
+export const treeConfiguration = new TreeConfiguration(Pop, () =>
+    new Pop({
+        item: createCircleItem(),
+        maxLevel: maxLevel,
+    })
 );

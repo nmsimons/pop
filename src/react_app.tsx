@@ -1,29 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { TreeView } from '@fluidframework/tree';
 import { FourCircles, Item } from './schema';
 import { ConnectionState, IFluidContainer } from 'fluid-framework';
 import { Tree } from '@fluidframework/tree';
 import { circleSizeMap } from './utils';
-import useSound from 'use-sound';
-import pop from './pop.mp3';
+import { playPop } from './utils';
 import { AzureContainerServices } from '@fluidframework/azure-client';
+import { maxLevel } from '.';
 
 export function ReactApp(props: {
-    data: TreeView<typeof Item>;
+    rootItem: Item;
     container: IFluidContainer;
-    services: AzureContainerServices
+    services: AzureContainerServices;
 }): JSX.Element {
-    const classes =
-        'flex flex-col gap-3 items-center justify-center mt-6 content-center select-none relative w-full';
-
-    return (
-        <div className={classes}>
+    
+    return (        
+        <div className="flex flex-col gap-3 items-center justify-center mt-6 content-center select-none relative w-full">
             <div className="scale-75 md:scale-100">
-                <CirclesLayerView i={props.data.root} />
+                <CirclesLayerView i={props.rootItem} />
             </div>
             <Explanation />
-            <AgainAgain root={props.data.root} />
-            <ConnectionStatus {...props} /> 
+            <AgainAgain root={props.rootItem} />
+            <ConnectionStatus {...props} />
             <div className="h-16" />
         </div>
     );
@@ -35,8 +32,24 @@ export function ConnectionStatus(props: {
     container: IFluidContainer;
     services: AzureContainerServices;
 }): JSX.Element {
+    const getConnectionStateAsString = (connectionState: ConnectionState) => {
+        switch (connectionState) {
+            case ConnectionState.Connected:
+                return 'connected';
+            case ConnectionState.Disconnected:
+                return 'disconnected';
+            case ConnectionState.EstablishingConnection:
+                return 'connecting';
+            case ConnectionState.CatchingUp:
+                return 'catching up';
+            default:
+                return 'unknown';
+        }
+    };
     const [users, setUsers] = useState(props.services.audience.getMembers().size);
-    const [connectionState, setConnectionState] = useState("");
+    const [connectionState, setConnectionState] = useState(
+        getConnectionStateAsString(props.container.connectionState)
+    );
     const [savedState, setSavedState] = useState(!props.container.isDirty);
 
     useEffect(() => {
@@ -50,39 +63,38 @@ export function ConnectionStatus(props: {
         };
     }, []);
 
-    useEffect(() => {        
+    useEffect(() => {
         props.container.on('connected', () => updateConnectionState());
-        props.container.on('disconnected', () => updateConnectionState());                      
-    }, []);
-
-    // Save the state of the app when the container is saved
-    useEffect(() => {        
-        props.container.on('saved', () => setSavedState(!props.container.isDirty));
-        props.container.on('dirty', () => setSavedState(!props.container.isDirty));        
+        props.container.on('disconnected', () => updateConnectionState());
+        props.container.on('dirty', () => updateConnectionState());
+        props.container.on('saved', () => updateConnectionState());
+        props.container.on('disposed', () => updateConnectionState());
     }, []);
 
     const updateConnectionState = () => {
-        if (props.container.connectionState === ConnectionState.Connected) {
-            setConnectionState("connected");
-        } else if (props.container.connectionState === ConnectionState.Disconnected) {
-            setConnectionState("disconnected");
-        } else if (props.container.connectionState === ConnectionState.EstablishingConnection) {
-            setConnectionState("connecting");
-        } else if (props.container.connectionState === ConnectionState.CatchingUp) {
-            setConnectionState("catching up");
-        }
+        setConnectionState(
+            getConnectionStateAsString(props.container.connectionState)
+        );
+        setSavedState(!props.container.isDirty);
     };
 
     return (
-        <div className="text-lg">
-            Users: {users} <br />
-            Connection State: {connectionState} <br />
-            Saved: {savedState.toString()} <br />
+        <div className="flex flex-row gap-2 items-center justify-center mt-6 content-center select-none relative w-full max-w-sm bg-black text-white p-4 rounded shadow-md">
+            <div className="flex flex-col text-right w-1/2">
+                <div>Users:</div>
+                <div>Connection State:</div>
+                <div>Saved:</div>
+                <div>Max Depth:</div>
+            </div>
+            <div className="flex flex-col text-left w-1/2">
+                <div>{users}</div>
+                <div>{connectionState}</div>
+                <div>{savedState.toString()}</div>
+                <div>{maxLevel}</div>
+            </div>
         </div>
     );
 }
-
-
 
 export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
     return (
@@ -103,7 +115,7 @@ export function CirclesLayerView(props: { i: Item }): JSX.Element {
     const [invalidations, setInvalidations] = useState(0);
 
     // Register for tree deltas when the component mounts.
-    // Any time the tree changes, the app will update
+    // Any time this Item changes, the component will update
     useEffect(() => {
         const unsubscribe = Tree.on(props.i, 'nodeChanged', () => {
             setInvalidations(invalidations + Math.random());
@@ -114,7 +126,7 @@ export function CirclesLayerView(props: { i: Item }): JSX.Element {
     if (props.i.shape === undefined) {
         return <Popped i={props.i} />;
     } else if (props.i.shape instanceof FourCircles) {
-        return <FourCirclesView fc={props.i.shape} />;        
+        return <FourCirclesView fc={props.i.shape} />;
     } else if (props.i.shape) {
         return <CircleView circle={props.i} />;
     } else {
@@ -123,8 +135,7 @@ export function CirclesLayerView(props: { i: Item }): JSX.Element {
 }
 
 export function CircleView(props: { circle: Item }): JSX.Element {
-    const [mounted, setMounted] = useState(false);
-    const [playPop] = useSound(pop, { volume: 0.1 });
+    const [mounted, setMounted] = useState(false);    
 
     useEffect(() => {
         setMounted(true);
@@ -145,7 +156,7 @@ export function CircleView(props: { circle: Item }): JSX.Element {
     };
 
     const size =
-        props.circle.level === props.circle.maxLevel + 1
+        props.circle.level === maxLevel + 1
             ? circleSizeMap.get(props.circle.level) + ' invisible'
             : circleSizeMap.get(props.circle.level);
 
@@ -214,7 +225,7 @@ export function Explanation(): JSX.Element {
 export function AgainAgain(props: { root: Item }): JSX.Element {
     return (
         <div
-            className="transition-all text-lg hover:scale-125"
+            className="transition-all text-lg hover:scale-125 text-center"
             onClick={() => props.root.hydrate()}
         >
             again again

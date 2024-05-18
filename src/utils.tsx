@@ -1,4 +1,12 @@
 // Definition of utility functions and constants
+import pop from './pop.mp3';
+
+// function to play the pop sound
+export const playPop = () => {
+    const popSound = new Audio(pop);
+    popSound.volume = 0.1;
+    popSound.play();    
+};
 
 export const circleSizeMap = new Map<number, string>([
     [0, 'w-[32rem] h-[32rem]'],
