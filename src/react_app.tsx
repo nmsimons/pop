@@ -21,15 +21,14 @@ export function ReactApp(props: {
         <div className="flex flex-col gap-3 items-center justify-center mt-6 content-center select-none relative w-full">
             <div className="scale-75 md:scale-100">
                 <CirclesLayerView i={props.rootItem} />
-            </div>
-            <Explanation />
+            </div>            
             <AgainAgain root={props.rootItem} />
             <ConnectionStatus {...props} />
             <button
                 className="transition-all text-lg hover:scale-125 text-center"
                 onClick={invalidate}
             >
-                Invalidate
+                invalidate
             </button>
             <div className="h-16" />
         </div>
