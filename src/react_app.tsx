@@ -11,8 +11,13 @@ export function ReactApp(props: {
     container: IFluidContainer;
     services: AzureContainerServices;
 }): JSX.Element {
-    
-    return (        
+    const [invalidations, setInvalidations] = useState(0);
+
+    const invalidate = () => {
+        setInvalidations(invalidations + Math.random());
+    };
+
+    return (
         <div className="flex flex-col gap-3 items-center justify-center mt-6 content-center select-none relative w-full">
             <div className="scale-75 md:scale-100">
                 <CirclesLayerView i={props.rootItem} />
@@ -20,6 +25,12 @@ export function ReactApp(props: {
             <Explanation />
             <AgainAgain root={props.rootItem} />
             <ConnectionStatus {...props} />
+            <button
+                className="transition-all text-lg hover:scale-125 text-center"
+                onClick={invalidate}
+            >
+                Invalidate
+            </button>
             <div className="h-16" />
         </div>
     );
@@ -78,7 +89,7 @@ export function ConnectionStatus(props: {
     };
 
     return (
-        <div className="flex flex-row gap-2 items-center justify-center mt-6 content-center select-none relative w-full max-w-sm bg-black text-white p-4 rounded shadow-md">
+        <div className="flex flex-row gap-2 items-center justify-center my-6 content-center select-none relative w-full max-w-sm bg-black text-white p-4 rounded shadow-md">
             <div className="flex flex-col text-right w-1/2">
                 <div>Users:</div>
                 <div>Connection State:</div>
@@ -134,7 +145,7 @@ export function CirclesLayerView(props: { i: Item }): JSX.Element {
 }
 
 export function CircleView(props: { circle: Item }): JSX.Element {
-    const [mounted, setMounted] = useState(false);    
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);

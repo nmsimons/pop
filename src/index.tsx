@@ -43,8 +43,7 @@ async function main() {
         const usp = new URLSearchParams(queryParams);
         // Get the maxLevel from the URL and convert it to a number
         const max = parseInt(usp.get('maxLevel') as string);
-        if (!isNaN(max))
-            maxLevel = parseInt(usp.get('maxLevel') as string);
+        if (!isNaN(max)) maxLevel = parseInt(usp.get('maxLevel') as string);
         else maxLevel = _defaultMaxLevel;
         if (maxLevel > maxMaxLevel) maxLevel = maxMaxLevel;
         if (maxLevel < 0) maxLevel = _defaultMaxLevel;
@@ -64,8 +63,12 @@ async function main() {
     // interactive immediately.
     root.render(
         <StrictMode>
-        <ReactApp rootItem={appData.root.item} container={container} services={services} />
-        </StrictMode>,
+            <ReactApp
+                rootItem={appData.root.item}
+                container={container}
+                services={services}
+            />
+        </StrictMode>
     );
 
     // If the app is in a `createNew` state - the container is detached, we attach the container.
