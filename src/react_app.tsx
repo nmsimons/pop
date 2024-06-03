@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { FourCircles, Item } from './schema';
 import { ConnectionState, IFluidContainer, Tree } from 'fluid-framework';
 import { circleSizeMap } from './utils';
@@ -121,13 +121,13 @@ export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
 }
 
 export function CirclesLayerView(props: { i: Item }): JSX.Element {
-    const [invalidations, setInvalidations] = useState(0);
+    const [, setInvalidations] = useState(0);
 
     // Register for tree deltas when the component mounts.
     // Any time this Item changes, the component will update
-    useEffect(() => {
+    useLayoutEffect(() => {
         const unsubscribe = Tree.on(props.i, 'nodeChanged', () => {
-            setInvalidations(invalidations + Math.random());
+            setInvalidations((val) => val + 1);
         });
         return unsubscribe;
     }, []);
