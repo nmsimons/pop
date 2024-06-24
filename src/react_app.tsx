@@ -6,6 +6,13 @@ import { playPop } from './utils';
 import { AzureContainerServices } from '@fluidframework/azure-client';
 import { maxLevel } from '.';
 
+type Circle = {
+    id: number;
+    level: number;
+    color: string;
+    pop: () => void;
+};
+
 export function ReactApp(props: {
     rootItem: Item;
     container: IFluidContainer;
@@ -20,8 +27,8 @@ export function ReactApp(props: {
     return (
         <div className="flex flex-col gap-3 items-center justify-center mt-6 content-center select-none relative w-full">
             <div className="scale-75 md:scale-100">
-                <CirclesLayerView i={props.rootItem} />
-            </div>            
+                <ItemView item={props.rootItem} />
+            </div>
             <AgainAgain root={props.rootItem} />
             <ConnectionStatus {...props} />
             <button
@@ -105,45 +112,68 @@ export function ConnectionStatus(props: {
     );
 }
 
-export function FourCirclesView(props: { fc: FourCircles }): JSX.Element {
-    return (
-        <div className="flex flex-col">
-            <div className="flex flex-row">
-                <CirclesLayerView i={props.fc.circle1} />
-                <CirclesLayerView i={props.fc.circle2} />
-            </div>
-            <div className="flex flex-row">
-                <CirclesLayerView i={props.fc.circle3} />
-                <CirclesLayerView i={props.fc.circle4} />
-            </div>
-        </div>
-    );
-}
+type ItemType = 'circle' | 'fourCircles' | 'popped';
 
-export function CirclesLayerView(props: { i: Item }): JSX.Element {
-    const [, setInvalidations] = useState(0);
+const getItemType = (item: Item): ItemType => {
+    if (item.shape === undefined) {
+        return 'popped';        
+    } else if (item.shape instanceof FourCircles) {
+        return 'fourCircles';
+    } else if (item.shape) {
+        return 'circle';
+    }
+    return 'circle';
+};
+
+export function ItemView(props: { item: Item }): JSX.Element {    
+    const [itemType, setItemType] = useState(getItemType(props.item));
 
     // Register for tree deltas when the component mounts.
     // Any time this Item changes, the component will update
-    useLayoutEffect(() => {
-        const unsubscribe = Tree.on(props.i, 'nodeChanged', () => {
-            setInvalidations((val) => val + 1);
-        });
+    useLayoutEffect(() => {        
+        const unsubscribe = Tree.on(props.item, 'nodeChanged', () =>
+            setItemType(getItemType(props.item))
+        );
         return unsubscribe;
     }, []);
 
-    if (props.i.shape === undefined) {
-        return <Popped i={props.i} />;
-    } else if (props.i.shape instanceof FourCircles) {
-        return <FourCirclesView fc={props.i.shape} />;
-    } else if (props.i.shape) {
-        return <CircleView circle={props.i} />;
-    } else {
-        return <Popped i={props.i} />;
+    const i = props.item;
+
+    switch (itemType) {
+        case 'circle':
+            return (
+                <CircleView
+                    circle={{
+                        id: i.id,
+                        level: i.level,
+                        color: i.color,
+                        pop: () => i.pop(),
+                    }}
+                />
+            );
+        case 'fourCircles':
+            if (Tree.is(i.shape, FourCircles)) {
+                return (
+                    <div className="flex flex-col">
+                        <div className="flex flex-row">
+                            <ItemView item={i.shape.circle1} />
+                            <ItemView item={i.shape.circle2} />
+                        </div>
+                        <div className="flex flex-row">
+                            <ItemView item={i.shape.circle3} />
+                            <ItemView item={i.shape.circle4} />
+                        </div>
+                    </div>
+                );
+            } else {
+                return <></>;
+            }
+        case 'popped':
+            return <Popped trim={i.trim} level={i.level} />;
     }
 }
 
-export function CircleView(props: { circle: Item }): JSX.Element {
+export function CircleView(props: { circle: Circle }): JSX.Element {
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -186,28 +216,26 @@ export function CircleView(props: { circle: Item }): JSX.Element {
     );
 }
 
-export function Popped(props: { i: Item }): JSX.Element {
+export function Popped(props: { trim: () => void; level: number }): JSX.Element {
     const [mounted, setMounted] = useState(false);
-
-    const parent = Tree.parent(props.i);
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
     const handleClick = (e: React.MouseEvent) => {
-        if (e.button === 0 && Tree.is(parent, FourCircles)) {
-            parent.trim();
+        if (e.button === 0) {
+            props.trim();
         }
     };
 
     const handleMouseEnter = (e: React.MouseEvent) => {
-        if (e.buttons > 0 && Tree.is(parent, FourCircles)) {
-            parent.trim();
+        if (e.buttons > 0) {
+            props.trim();
         }
     };
 
-    const size = circleSizeMap.get(props.i.level);
+    const size = circleSizeMap.get(props.level);
 
     return (
         <div

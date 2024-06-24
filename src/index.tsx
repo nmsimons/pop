@@ -1,5 +1,5 @@
 /* eslint-disable react/jsx-key */
-import { treeConfiguration } from './schema';
+import { Pop, createCircleItem, treeConfiguration } from './schema';
 
 import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -50,7 +50,15 @@ async function main() {
     }
 
     // Initialize the SharedTree Data Structure
-    const appData = container.initialObjects.appData.schematize(treeConfiguration);
+    const appData = container.initialObjects.appData.viewWith(treeConfiguration);
+    if (appData.compatibility.canInitialize) {
+        appData.initialize(
+            new Pop({
+                item: createCircleItem(),
+                maxLevel: maxLevel,
+            })
+        );
+    }
 
     // If the maxLevel is not set and the container is not detached
     // Get the maxLevel from the Fluid Container

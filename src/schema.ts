@@ -1,7 +1,7 @@
 import {
     SchemaFactory,
     Tree,
-    TreeConfiguration,
+    TreeViewConfiguration,
     ValidateRecursiveSchema,
 } from 'fluid-framework';
 import { maxLevel } from '.';
@@ -18,7 +18,7 @@ export class Item extends sf.objectRecursive('Item', {
 }) {
     public readonly id = _counter++;
 
-    public hydrate() {
+    public hydrate = () => {
         // Reset the counter when the tree is hydrated
         if (this.level === 0) {
             _counter = 0;
@@ -27,7 +27,7 @@ export class Item extends sf.objectRecursive('Item', {
         this.color = getRandomColor();
     }
 
-    public pop() {
+    public pop = () => {
         if (maxLevel === this.level) {
             this.shape = undefined;
             this.trim();
@@ -47,7 +47,7 @@ export class Item extends sf.objectRecursive('Item', {
         return undefined === this.shape;
     }
 
-    public trim() {
+    public trim = () => {
         if (this.isEmpty) {
             const parent = Tree.parent(this);
             if (parent instanceof FourCircles) {
@@ -63,7 +63,7 @@ export class FourCircles extends sf.object('FourCircles', {
     circle3: Item,
     circle4: Item,
 }) {
-    public trim() {
+    public trim = () => {
         if (this.isEmpty()) {
             const parent = Tree.parent(this);
             if (parent instanceof Item) {
@@ -130,7 +130,7 @@ const createFourCircles = (): FourCircles => {
     });
 };
 
-const createCircleItem = (): Item => {
+export const createCircleItem = (): Item => {
     return new Item({              
         shape: true,
         color: getRandomColor(),
@@ -145,9 +145,4 @@ const createCircleItem = (): Item => {
     type _check = ValidateRecursiveSchema<typeof Item>;
 }
 
-export const treeConfiguration = new TreeConfiguration(Pop, () =>
-    new Pop({
-        item: createCircleItem(),
-        maxLevel: maxLevel,
-    })
-);
+export const treeConfiguration = new TreeViewConfiguration({schema: Pop})

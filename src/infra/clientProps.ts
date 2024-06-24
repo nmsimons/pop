@@ -1,7 +1,6 @@
 import {
     AzureRemoteConnectionConfig,
-    AzureClientProps,
-    AzureLocalConnectionConfig,
+    AzureClientProps,    
 } from '@fluidframework/azure-client';
 import { AzureFunctionTokenProvider, azureUser, user } from './tokenProvider';
 
