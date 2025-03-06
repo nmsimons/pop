@@ -17,16 +17,12 @@ export function ReactApp(props: {
     rootItem: Item;
     container: IFluidContainer;
     services: AzureContainerServices;
-}): JSX.Element {   
-   
+}): JSX.Element {
     return (
-        <div		
-			className="flex flex-col bg-transparent h-[calc(100vh-48px)] w-full overflow-hidden overscroll-none"
-		>
-            <ConnectionStatus {...props} />                   
+        <div className="flex flex-col bg-transparent h-[calc(100vh-48px)] w-full overflow-hidden overscroll-none">
+            <ConnectionStatus {...props} />
             <RootItemView root={props.rootItem} />
             <Footer root={props.rootItem} />
-            
         </div>
     );
 }
@@ -34,8 +30,8 @@ export function ReactApp(props: {
 export function RootItemView(props: { root: Item }): JSX.Element {
     return (
         <div className="flex flex-row h-full justify-center items-center overflow-x-hidden overflow-y-auto">
-        <div className="scale-75 sm:scale-100 md:scale-125 lg:scale-150">
-            <ItemView item={props.root} />
+            <div className="scale-75 sm:scale-100 md:scale-125 lg:scale-150">
+                <ItemView item={props.root} />
             </div>
         </div>
     );
@@ -61,7 +57,9 @@ export function ConnectionStatus(props: {
                 return 'unknown';
         }
     };
-    const [users, setUsers] = useState(props.services.audience.getMembers().values());
+    const [users, setUsers] = useState(
+        props.services.audience.getMembers().values()
+    );
     const [connectionState, setConnectionState] = useState(
         getConnectionStateAsString(props.container.connectionState)
     );
@@ -95,11 +93,11 @@ export function ConnectionStatus(props: {
 
     return (
         <Header
-        clientId='clientId'
-        connectionState={connectionState}
-        fluidMembers={Array.from(users) as IMember[]}
-        saved={savedState}
-        />        
+            clientId="clientId"
+            connectionState={connectionState}
+            fluidMembers={Array.from(users) as IMember[]}
+            saved={savedState}
+        />
     );
 }
 
@@ -107,7 +105,7 @@ type ItemType = 'circle' | 'fourCircles' | 'popped';
 
 const getItemType = (item: Item): ItemType => {
     if (item.shape === undefined) {
-        return 'popped';        
+        return 'popped';
     } else if (item.shape instanceof FourCircles) {
         return 'fourCircles';
     } else if (item.shape) {
@@ -116,12 +114,12 @@ const getItemType = (item: Item): ItemType => {
     return 'circle';
 };
 
-export function ItemView(props: { item: Item }): JSX.Element {    
+export function ItemView(props: { item: Item }): JSX.Element {
     const [itemType, setItemType] = useState(getItemType(props.item));
 
     // Register for tree deltas when the component mounts.
     // Any time this Item changes, the component will update
-    useLayoutEffect(() => {        
+    useLayoutEffect(() => {
         const unsubscribe = Tree.on(props.item, 'nodeChanged', () =>
             setItemType(getItemType(props.item))
         );
@@ -251,7 +249,6 @@ export function Explanation(): JSX.Element {
 }
 
 export function Footer(props: { root: Item }): JSX.Element {
-
     const { root } = props;
 
     return (
@@ -273,19 +270,18 @@ export function AgainAgain(props: { root: Item }): JSX.Element {
 }
 
 export function Header(props: {
-	saved: boolean;
-	connectionState: string;
-	fluidMembers: IMember[];
-	clientId: string;	
-}): JSX.Element {	
-
-	return (
-		<div className="h-[48px] flex shrink-0 flex-row items-center justify-between bg-black text-base text-white z-40 w-full">
-			<div className="flex m-2">Pop</div>
-			<div className="flex m-2 ">
-				{props.saved ? "saved" : "not saved"} | {props.connectionState} |
-				users: {props.fluidMembers.length}
-			</div>
-		</div>
-	);
+    saved: boolean;
+    connectionState: string;
+    fluidMembers: IMember[];
+    clientId: string;
+}): JSX.Element {
+    return (
+        <div className="h-[48px] flex shrink-0 flex-row items-center justify-between bg-black text-base text-white z-40 w-full">
+            <div className="flex m-2">Pop</div>
+            <div className="flex m-2 ">
+                {props.saved ? 'saved' : 'not saved'} | {props.connectionState} |
+                users: {props.fluidMembers.length}
+            </div>
+        </div>
+    );
 }

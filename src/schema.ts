@@ -13,8 +13,8 @@ let _counter = 0;
 export const _defaultMaxLevel = 5;
 
 export class Item extends sf.objectRecursive('Item', {
-    shape: sf.optionalRecursive([sf.boolean, () => FourCircles]),    
-    color: sf.string,    
+    shape: sf.optionalRecursive([sf.boolean, () => FourCircles]),
+    color: sf.string,
 }) {
     public readonly id = _counter++;
 
@@ -25,7 +25,7 @@ export class Item extends sf.objectRecursive('Item', {
         }
         this.shape = true;
         this.color = getRandomColor();
-    }
+    };
 
     public pop = () => {
         if (maxLevel === this.level) {
@@ -34,12 +34,11 @@ export class Item extends sf.objectRecursive('Item', {
         } else {
             this.shape = createFourCircles();
         }
-    }
+    };
 
     public get level(): number {
         const parent = Tree.parent(this);
-        if (Tree.is(parent, FourCircles))
-            return parent.level;
+        if (Tree.is(parent, FourCircles)) return parent.level;
         else return 0;
     }
 
@@ -54,7 +53,7 @@ export class Item extends sf.objectRecursive('Item', {
                 parent.trim();
             }
         }
-    }
+    };
 }
 
 export class FourCircles extends sf.object('FourCircles', {
@@ -71,7 +70,7 @@ export class FourCircles extends sf.object('FourCircles', {
                 parent.trim();
             }
         }
-    }
+    };
 
     // if two or more circles are removed concurrently, this test will fail
     // because it will return false in both clients and won't run again
@@ -131,7 +130,7 @@ const createFourCircles = (): FourCircles => {
 };
 
 export const createCircleItem = (): Item => {
-    return new Item({              
+    return new Item({
         shape: true,
         color: getRandomColor(),
     });
@@ -145,4 +144,4 @@ export const createCircleItem = (): Item => {
     type _check = ValidateRecursiveSchema<typeof Item>;
 }
 
-export const treeConfiguration = new TreeViewConfiguration({schema: Pop})
+export const treeConfiguration = new TreeViewConfiguration({ schema: Pop });

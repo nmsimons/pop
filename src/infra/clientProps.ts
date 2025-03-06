@@ -1,9 +1,8 @@
 import {
     AzureRemoteConnectionConfig,
-    AzureClientProps,    
+    AzureClientProps,
 } from '@fluidframework/azure-client';
 import { AzureFunctionTokenProvider, azureUser, user } from './tokenProvider.js';
-
 
 const useAzure = process.env.FLUID_CLIENT === 'azure';
 if (!useAzure) {
@@ -20,8 +19,7 @@ const remoteConnectionConfig: AzureRemoteConnectionConfig = {
     endpoint: process.env.AZURE_ORDERER!,
 };
 
-
 const connectionConfig: AzureRemoteConnectionConfig = remoteConnectionConfig;
 export const clientProps: AzureClientProps = {
-    connection: connectionConfig,    
+    connection: connectionConfig,
 };

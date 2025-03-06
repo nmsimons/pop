@@ -5,7 +5,7 @@ import pop from './pop.mp3';
 export const playPop = () => {
     const popSound = new Audio(pop);
     popSound.volume = 0.1;
-    popSound.play();    
+    popSound.play();
 };
 
 export const circleSizeMap = new Map<number, string>([
