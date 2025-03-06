@@ -1,6 +1,6 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { FourCircles, Item } from './schema.js';
-import { ConnectionState, IFluidContainer, Tree } from 'fluid-framework';
+import { ConnectionState, IFluidContainer, IMember, Tree } from 'fluid-framework';
 import { circleSizeMap } from './utils.js';
 import { playPop } from './utils.js';
 import { AzureContainerServices } from '@fluidframework/azure-client';
@@ -17,27 +17,26 @@ export function ReactApp(props: {
     rootItem: Item;
     container: IFluidContainer;
     services: AzureContainerServices;
-}): JSX.Element {
-    const [invalidations, setInvalidations] = useState(0);
-
-    const invalidate = () => {
-        setInvalidations(invalidations + Math.random());
-    };
-
+}): JSX.Element {   
+   
     return (
-        <div className="flex flex-col gap-3 items-center justify-center mt-6 content-center select-none relative w-full">
-            <div className="scale-75 md:scale-100">
-                <ItemView item={props.rootItem} />
+        <div		
+			className="flex flex-col bg-transparent h-[calc(100vh-48px)] w-full overflow-hidden overscroll-none"
+		>
+            <ConnectionStatus {...props} />                   
+            <RootItemView root={props.rootItem} />
+            <Footer root={props.rootItem} />
+            
+        </div>
+    );
+}
+
+export function RootItemView(props: { root: Item }): JSX.Element {
+    return (
+        <div className="flex flex-row h-full justify-center items-center overflow-x-hidden overflow-y-auto">
+        <div className="scale-75 sm:scale-100 md:scale-125 lg:scale-150">
+            <ItemView item={props.root} />
             </div>
-            <AgainAgain root={props.rootItem} />
-            <ConnectionStatus {...props} />
-            <button
-                className="transition-all text-lg hover:scale-125 text-center"
-                onClick={invalidate}
-            >
-                invalidate
-            </button>
-            <div className="h-16" />
         </div>
     );
 }
@@ -62,7 +61,7 @@ export function ConnectionStatus(props: {
                 return 'unknown';
         }
     };
-    const [users, setUsers] = useState(props.services.audience.getMembers().size);
+    const [users, setUsers] = useState(props.services.audience.getMembers().values());
     const [connectionState, setConnectionState] = useState(
         getConnectionStateAsString(props.container.connectionState)
     );
@@ -71,7 +70,7 @@ export function ConnectionStatus(props: {
     useEffect(() => {
         const audience = props.services.audience;
         const handleAudienceChange = () => {
-            setUsers(audience.getMembers().size);
+            setUsers(audience.getMembers().values());
         };
         audience.on('membersChanged', handleAudienceChange);
         return () => {
@@ -95,20 +94,12 @@ export function ConnectionStatus(props: {
     };
 
     return (
-        <div className="flex flex-row gap-2 items-center justify-center my-6 content-center select-none relative w-full max-w-sm bg-black text-white p-4 rounded shadow-md">
-            <div className="flex flex-col text-right w-1/2">
-                <div>Users:</div>
-                <div>Connection State:</div>
-                <div>Saved:</div>
-                <div>Max Depth:</div>
-            </div>
-            <div className="flex flex-col text-left w-1/2">
-                <div>{users}</div>
-                <div>{connectionState}</div>
-                <div>{savedState.toString()}</div>
-                <div>{maxLevel}</div>
-            </div>
-        </div>
+        <Header
+        clientId='clientId'
+        connectionState={connectionState}
+        fluidMembers={Array.from(users) as IMember[]}
+        saved={savedState}
+        />        
     );
 }
 
@@ -259,13 +250,42 @@ export function Explanation(): JSX.Element {
     );
 }
 
+export function Footer(props: { root: Item }): JSX.Element {
+
+    const { root } = props;
+
+    return (
+        <div className="fixed bottom-0 left-0 flex flex-row w-full h-[48px] bg-gray-600 text-white text-lg justify-center z-40 items-center">
+            <AgainAgain root={root} />
+        </div>
+    );
+}
+
 export function AgainAgain(props: { root: Item }): JSX.Element {
     return (
         <div
-            className="transition-all text-lg hover:scale-125 text-center"
+            className="transition-all text-lg hover:scale-125 text-center cursor-pointer"
             onClick={() => props.root.hydrate()}
         >
             again again
         </div>
     );
+}
+
+export function Header(props: {
+	saved: boolean;
+	connectionState: string;
+	fluidMembers: IMember[];
+	clientId: string;	
+}): JSX.Element {	
+
+	return (
+		<div className="h-[48px] flex shrink-0 flex-row items-center justify-between bg-black text-base text-white z-40 w-full">
+			<div className="flex m-2">Pop</div>
+			<div className="flex m-2 ">
+				{props.saved ? "saved" : "not saved"} | {props.connectionState} |
+				users: {props.fluidMembers.length}
+			</div>
+		</div>
+	);
 }
