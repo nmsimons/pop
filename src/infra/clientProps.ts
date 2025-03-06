@@ -2,7 +2,7 @@ import {
     AzureRemoteConnectionConfig,
     AzureClientProps,    
 } from '@fluidframework/azure-client';
-import { AzureFunctionTokenProvider, azureUser, user } from './tokenProvider';
+import { AzureFunctionTokenProvider, azureUser, user } from './tokenProvider.js';
 
 
 const useAzure = process.env.FLUID_CLIENT === 'azure';

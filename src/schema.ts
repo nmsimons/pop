@@ -4,7 +4,7 @@ import {
     TreeViewConfiguration,
     ValidateRecursiveSchema,
 } from 'fluid-framework';
-import { maxLevel } from '.';
+import { maxLevel } from './index.js';
 
 const sf = new SchemaFactory('6404be1d-5e53-43f3-ac45-113c96a7c31b');
 

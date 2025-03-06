@@ -1,10 +1,10 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { FourCircles, Item } from './schema';
+import { FourCircles, Item } from './schema.js';
 import { ConnectionState, IFluidContainer, Tree } from 'fluid-framework';
-import { circleSizeMap } from './utils';
-import { playPop } from './utils';
+import { circleSizeMap } from './utils.js';
+import { playPop } from './utils.js';
 import { AzureContainerServices } from '@fluidframework/azure-client';
-import { maxLevel } from '.';
+import { maxLevel } from './index.js';
 
 type Circle = {
     id: number;

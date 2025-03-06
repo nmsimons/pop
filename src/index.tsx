@@ -1,14 +1,14 @@
 /* eslint-disable react/jsx-key */
-import { Pop, createCircleItem, treeConfiguration } from './schema';
+import { Pop, createCircleItem, treeConfiguration } from './schema.js';
 
 import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { loadFluidData, containerSchema } from './infra/fluid';
+import { loadFluidData, containerSchema } from './infra/fluid.js';
 import './output.css';
-import { ReactApp } from './react_app';
-import { _defaultMaxLevel } from './schema';
+import { ReactApp } from './react_app.js';
+import { _defaultMaxLevel } from './schema.js';
 import { AttachState } from 'fluid-framework';
-import { clientProps } from './infra/clientProps';
+import { clientProps } from './infra/clientProps.js';
 import { AzureClient } from '@fluidframework/azure-client';
 
 export let maxLevel = -1;
