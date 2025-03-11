@@ -16,6 +16,11 @@ const maxMaxLevel = 7;
 
 async function main() {
     // create the root element for React
+    // first check if it already exists
+    // this fixes an issue with hot reloading
+    if (document.getElementById('app')) {
+        document.getElementById('app')!.remove();
+    }
     const app = document.createElement('div');
     app.id = 'app';
     document.body.appendChild(app);

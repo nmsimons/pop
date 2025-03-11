@@ -1,35 +1,34 @@
 {
     "name": "shared-tree-demo",
     "version": "0.0.1",
-	"private": "true",
-	"description": "",
-	"license": "MIT",
-	"type": "module",
-	"scripts": {
-		"build": "npm run format && npm run webpack",
-		"ci:test": "npm run test",
-		"compile": "tsc -b",
-		"dev": "cross-env vite",
-		"dev:local": "cross-env FLUID_CLIENT='local' vite serve",
-		"dev:azure": "cross-env FLUID_CLIENT='azure' vite serve",
-		"dev:spe": "cross-env FLUID_CLIENT='spe' vite serve",
-		"format": "prettier src --write",
-		"lint": "eslint src",
-		"start": "npm run dev",
-		"start:server": "azure-local-service",
-		"pretest": "playwright install --with-deps",
-		"test": "playwright test",
-		"webpack": "cross-env vite build"
-	},
-	"engines": {
-		"node": ">=20.0.0"
-	},
-    "dependencies": {
-        "@fluentui/react-icons": "^2.0.221",
+    "private": "true",
+    "description": "",
+    "license": "MIT",
+    "type": "module",
+    "scripts": {
+        "build": "npm run format && npm run webpack",
+        "ci:test": "npm run test",
+        "compile": "tsc -b",
+        "dev": "cross-env vite",
+        "dev:local": "cross-env FLUID_CLIENT='local' vite serve",
+        "dev:azure": "cross-env FLUID_CLIENT='azure' vite serve",
+        "dev:spe": "cross-env FLUID_CLIENT='spe' vite serve",
+        "format": "prettier src --write",
+        "lint": "eslint src",
+        "start": "npm run dev",
+        "start:server": "azure-local-service",
+        "pretest": "playwright install --with-deps",
+        "test": "playwright test",
+        "webpack": "cross-env vite build"
+    },
+    "engines": {
+        "node": ">=20.0.0"
+    },
+    "dependencies": {        
         "@fluidframework/azure-client": "^2.23.0",
         "@fluidframework/telemetry-utils": "^2.23.0",
         "@fluidframework/test-runtime-utils": "^2.23.0",
-        "@tailwindcss/vite": "^4.0.9",        
+        "@tailwindcss/vite": "^4.0.9",
         "@types/react": "^18.2.0",
         "@types/react-dom": "^18.2.0",
         "@vitejs/plugin-react": "^4.3.4",
@@ -38,32 +37,23 @@
         "fluid-framework": "^2.23.0",
         "guid-typescript": "^1.0.9",
         "hashids": "^2.2.10",
-        "react": "^18.2.0",
-        "react-dnd": "^16.0.1",
-        "react-dnd-html5-backend": "^16.0.1",
-        "react-dom": "^18.2.0",
+        "react": "^19.0.0",
+        "react-dom": "^19.0.0",
         "react-transition-state": "^2.1.0",
-        "vite": "^6.2.0"        
+        "tailwindcss": "^4.0.9",
+        "vite": "^6.2.0"
     },
     "devDependencies": {
         "@fluidframework/devtools": "^2.23.0",
         "@types/debug": "^4.1.7",
         "@typescript-eslint/eslint-plugin": "^5.38.0",
-        "@typescript-eslint/parser": "^5.38.0",
-        "clean-webpack-plugin": "^3.0.0",
-        "copy-webpack-plugin": "^11.0.0",
+        "@typescript-eslint/parser": "^5.38.0",       
         "cross-env": "^7.0.3",
-        "css-loader": "^5",
-        "dotenv-webpack": "^7.1.1",
         "eslint": "^8.23.1",
-        "eslint-plugin-react": "^7.31.8",
-        "file-loader": "^6.2.0",
-        "html-webpack-plugin": "^4.5.2",
-        "mini-css-extract-plugin": "^1",
-        "prettier": "^2.7.1",
-        "style-loader": "^2",
+        "eslint-plugin-react": "^7.31.8",              
+        "prettier": "^2.7.1",       
         "tailwindcss": "^4.0.9",
-		"ts-loader": "^9.5.2",
-		"typescript": "~5.7"        
+        "ts-loader": "^9.5.2",
+        "typescript": "~5.7"
     }
 }

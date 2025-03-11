@@ -43,6 +43,10 @@ export function ConnectionStatus(props: {
     container: IFluidContainer;
     services: AzureContainerServices;
 }): JSX.Element {
+
+    const { container, services } = props;
+    const audience = services.audience;
+
     const getConnectionStateAsString = (connectionState: ConnectionState) => {
         switch (connectionState) {
             case ConnectionState.Connected:
@@ -57,18 +61,17 @@ export function ConnectionStatus(props: {
                 return 'unknown';
         }
     };
-    const [users, setUsers] = useState(
-        props.services.audience.getMembers().values()
+    const [users, setUsers] = useState<IMember[]>(
+        Array.from(audience.getMembers().values())
     );
     const [connectionState, setConnectionState] = useState(
-        getConnectionStateAsString(props.container.connectionState)
+        getConnectionStateAsString(container.connectionState)
     );
-    const [savedState, setSavedState] = useState(!props.container.isDirty);
+    const [savedState, setSavedState] = useState(!container.isDirty);
 
-    useEffect(() => {
-        const audience = props.services.audience;
+    useEffect(() => {        
         const handleAudienceChange = () => {
-            setUsers(audience.getMembers().values());
+            setUsers(Array.from(audience.getMembers().values()));
         };
         audience.on('membersChanged', handleAudienceChange);
         return () => {
@@ -77,11 +80,11 @@ export function ConnectionStatus(props: {
     }, []);
 
     useEffect(() => {
-        props.container.on('connected', () => updateConnectionState());
-        props.container.on('disconnected', () => updateConnectionState());
-        props.container.on('dirty', () => updateConnectionState());
-        props.container.on('saved', () => updateConnectionState());
-        props.container.on('disposed', () => updateConnectionState());
+        container.on('connected', () => updateConnectionState());
+        container.on('disconnected', () => updateConnectionState());
+        container.on('dirty', () => updateConnectionState());
+        container.on('saved', () => updateConnectionState());
+        container.on('disposed', () => updateConnectionState());
     }, []);
 
     const updateConnectionState = () => {
@@ -93,9 +96,8 @@ export function ConnectionStatus(props: {
 
     return (
         <Header
-            clientId="clientId"
             connectionState={connectionState}
-            fluidMembers={Array.from(users) as IMember[]}
+            fluidMembers={Array.from(users) as Array<IMember>}
             saved={savedState}
         />
     );
@@ -272,15 +274,17 @@ export function AgainAgain(props: { root: Item }): JSX.Element {
 export function Header(props: {
     saved: boolean;
     connectionState: string;
-    fluidMembers: IMember[];
-    clientId: string;
+    fluidMembers: IMember[];    
 }): JSX.Element {
+
+    const { saved, connectionState, fluidMembers } = props;
+
     return (
         <div className="h-[48px] flex shrink-0 flex-row items-center justify-between bg-black text-base text-white z-40 w-full">
             <div className="flex m-2">Pop</div>
             <div className="flex m-2 ">
-                {props.saved ? 'saved' : 'not saved'} | {props.connectionState} |
-                users: {props.fluidMembers.length}
+                {saved ? 'saved' : 'not saved'} | {connectionState} |
+                users: {fluidMembers.length}
             </div>
         </div>
     );
